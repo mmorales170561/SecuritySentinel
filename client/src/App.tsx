@@ -13,6 +13,7 @@ import RepositoryScan from "@/pages/repository";
 import Settings from "@/pages/settings";
 import ToolsIntegration from "@/pages/tools";
 import CustomTools from "@/pages/custom-tools";
+import History from "@/pages/history";
 import { useToast } from "@/hooks/use-toast";
 
 function Router() {
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/settings" component={Settings} />
       <Route path="/tools" component={ToolsIntegration} />
       <Route path="/custom-tools" component={CustomTools} />
+      <Route path="/history" component={History} />
       <Route component={NotFound} />
     </Switch>
   );

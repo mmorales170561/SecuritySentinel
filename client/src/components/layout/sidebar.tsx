@@ -177,35 +177,21 @@ export function Sidebar({ isMobileOpen, closeMobileMenu }: SidebarProps) {
 
         <div>
           <h2 className="text-xs uppercase tracking-wider text-gray-500 mb-3">
-            Recent Scans
+            Reports
           </h2>
           <ul className="space-y-2">
             <li>
-              <a
-                href="#"
-                className="flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300 text-sm"
+              <div
+                className={`flex items-center px-3 py-2 rounded-md cursor-pointer ${
+                  location === "/history"
+                    ? "bg-primary bg-opacity-20 text-primary"
+                    : "hover:bg-gray-800 text-gray-300"
+                }`}
+                onClick={() => (window.location.href = "/history")}
               >
-                <span className="material-icons text-xs mr-2">schedule</span>
-                <span className="truncate">example.com (2 hours ago)</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300 text-sm"
-              >
-                <span className="material-icons text-xs mr-2">schedule</span>
-                <span className="truncate">auth-service.js (1 day ago)</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300 text-sm"
-              >
-                <span className="material-icons text-xs mr-2">schedule</span>
-                <span className="truncate">api.company.com (3 days ago)</span>
-              </a>
+                <span className="material-icons text-sm mr-3">history</span>
+                <span>Scan History</span>
+              </div>
             </li>
           </ul>
         </div>
