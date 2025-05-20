@@ -10,6 +10,7 @@ import CodeAnalysis from "@/pages/code";
 import NetworkScan from "@/pages/network";
 import ApiTesting from "@/pages/api";
 import RepositoryScan from "@/pages/repository";
+import Settings from "@/pages/settings";
 import { useToast } from "@/hooks/use-toast";
 
 function Router() {
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/network" component={NetworkScan} />
       <Route path="/api" component={ApiTesting} />
       <Route path="/repository" component={RepositoryScan} />
+      <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
   );
