@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { CodeAnalysisForm } from "@/components/code-analysis-form";
 import { ScanningProgress } from "@/components/scanning-progress";
 import { ScanResults } from "@/components/scan-results";
+import { PageNav } from "@/components/layout/page-nav";
 import { useScan } from "@/hooks/use-scan";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,12 +17,10 @@ export default function CodeAnalysis() {
   
   return (
     <div className="container py-10 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Code Analysis</h1>
-        <p className="text-muted-foreground mt-2">
-          Analyze code for security vulnerabilities and best practice violations
-        </p>
-      </div>
+      <PageNav 
+        title="Code Analysis" 
+        description="Analyze code for security vulnerabilities and best practice violations" 
+      />
       
       <Tabs defaultValue="scan" className="space-y-4">
         <TabsList>

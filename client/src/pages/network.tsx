@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScanningProgress } from "@/components/scanning-progress";
 import { ScanResults } from "@/components/scan-results";
+import { PageNav } from "@/components/layout/page-nav";
 import { useScan } from "@/hooks/use-scan";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -96,12 +97,10 @@ export default function NetworkScan() {
   
   return (
     <div className="container py-10 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Network Scan</h1>
-        <p className="text-muted-foreground mt-2">
-          Discover open ports, services, and vulnerabilities in your network
-        </p>
-      </div>
+      <PageNav 
+        title="Network Scan" 
+        description="Discover open ports, services, and vulnerabilities in your network" 
+      />
       
       <Tabs defaultValue="scan" className="space-y-4">
         <TabsList>
