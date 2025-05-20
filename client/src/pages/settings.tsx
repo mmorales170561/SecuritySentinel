@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PageNav } from "@/components/layout/page-nav";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -248,12 +249,10 @@ export default function Settings() {
   
   return (
     <div className="container py-10 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground mt-2">
-          Configure your scanning environment, API integrations, and user preferences
-        </p>
-      </div>
+      <PageNav
+        title="Settings"
+        description="Configure your scanning environment, API integrations, and user preferences"
+      />
       
       <Tabs defaultValue="general" className="space-y-4">
         <TabsList>

@@ -222,12 +222,10 @@ function login(username, password) {
   
   return (
     <div className="container py-10 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Custom Security Tools</h1>
-        <p className="text-muted-foreground mt-2">
-          Powerful security scanning tools built directly into our platform
-        </p>
-      </div>
+      <PageNav
+        title="Custom Security Tools"
+        description="Powerful security scanning tools built directly into our platform"
+      />
       
       {/* Main content - either show scan tools or results */}
       {isScanning ? (
