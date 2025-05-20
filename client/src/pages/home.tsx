@@ -51,16 +51,16 @@ export default function Home() {
         <main className="flex-1 overflow-auto">
           <div className="container mx-auto p-4 md:p-6">
             <Tabs defaultValue="web" value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="bg-dark-surface mb-6">
-                <TabsTrigger value="web">Web Security Scan</TabsTrigger>
-                <TabsTrigger value="code">Code Analysis</TabsTrigger>
+              <TabsList className="bg-dark-surface mb-6 w-full flex space-x-0">
+                <TabsTrigger value="web" className="flex-1">Web Security Scan</TabsTrigger>
+                <TabsTrigger value="code" className="flex-1">Code Analysis</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="web">
+              <TabsContent value="web" className="mt-4">
                 <ScanForm onScanStart={handleScanStart} />
               </TabsContent>
               
-              <TabsContent value="code">
+              <TabsContent value="code" className="mt-4">
                 <CodeAnalysisForm onAnalysisStart={handleCodeAnalysisStart} />
               </TabsContent>
             </Tabs>

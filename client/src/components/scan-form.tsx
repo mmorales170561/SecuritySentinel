@@ -81,12 +81,12 @@ export function ScanForm({ onScanStart }: ScanFormProps) {
               />
             </div>
           </div>
-          <div>
+          <div className="w-full md:w-auto">
             <Label htmlFor="scan-type" className="block text-sm font-medium mb-1">
               Scan Type
             </Label>
             <Select value={scanType} onValueChange={setScanType}>
-              <SelectTrigger id="scan-type" className="bg-dark-bg border border-dark-border text-white rounded-lg">
+              <SelectTrigger id="scan-type" className="bg-dark-bg border border-dark-border text-white rounded-lg w-full">
                 <SelectValue placeholder="Select scan type" />
               </SelectTrigger>
               <SelectContent className="bg-dark-bg border border-dark-border text-white">
@@ -100,7 +100,7 @@ export function ScanForm({ onScanStart }: ScanFormProps) {
           </div>
         </div>
         
-        <div className="flex flex-wrap gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           <div className="flex items-center">
             <Checkbox 
               id="use-proxy" 
@@ -136,13 +136,13 @@ export function ScanForm({ onScanStart }: ScanFormProps) {
           </div>
         </div>
         
-        <div className="flex justify-end">
-          <Button type="button" variant="secondary" className="mr-2">
+        <div className="flex flex-col sm:flex-row justify-end gap-2">
+          <Button type="button" variant="secondary" className="w-full sm:w-auto">
             Advanced Options
           </Button>
           <Button 
             type="submit" 
-            className="bg-primary hover:bg-blue-700 text-white flex items-center"
+            className="bg-primary hover:bg-blue-700 text-white flex items-center justify-center w-full sm:w-auto"
             disabled={startScanMutation.isPending}
           >
             <span className="material-icons text-sm mr-1">search</span>
