@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview Generator</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0f172a;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .preview-container {
+      width: 1200px;
+      height: 630px;
+      position: relative;
+      overflow: hidden;
+      color: white;
+    }
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(30,41,59,0.9) 100%);
+      z-index: 1;
+    }
+    .content {
+      position: relative;
+      z-index: 2;
+      padding: 60px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      box-sizing: border-box;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+    .logo {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-right: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .logo-icon {
+      font-size: 3rem;
+      margin-right: 16px;
+    }
+    .title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .description {
+      font-size: 1.5rem;
+      color: #94a3b8;
+      margin-bottom: 40px;
+      max-width: 800px;
+    }
+    .features {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    .feature {
+      background-color: rgba(30,41,59,0.7);
+      border-radius: 12px;
+      padding: 20px;
+      flex: 1;
+      border: 1px solid #334155;
+    }
+    .feature-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+    .feature-icon {
+      margin-right: 10px;
+      color: #3b82f6;
+    }
+    .feature-text {
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+    .code-snippet {
+      background-color: rgba(15,23,42,0.9);
+      border-radius: 12px;
+      padding: 20px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: #94a3b8;
+      overflow: hidden;
+      position: relative;
+      height: 180px;
+    }
+    .footer {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .github {
+      display: flex;
+      align-items: center;
+      font-size: 1.2rem;
+    }
+    .github-icon {
+      margin-right: 10px;
+    }
+    .badge {
+      background-color: #3b82f6;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    /* Simulate code highlighting */
+    .code-keyword { color: #8b5cf6; }
+    .code-string { color: #10b981; }
+    .code-function { color: #3b82f6; }
+    .code-comment { color: #64748b; }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <div class="overlay"></div>
+    <div class="content">
+      <div class="header">
+        <div class="logo">
+          <span class="logo-icon">🔒</span>
+          Security Scanner
+        </div>
+      </div>
+      
+      <h1 class="title">Web & Code Security Analysis</h1>
+      <p class="description">
+        A comprehensive security scanning tool for identifying vulnerabilities in web applications and code samples.
+      </p>
+      
+      <div class="features">
+        <div class="feature">
+          <div class="feature-title">
+            <span class="feature-icon">🔍</span>
+            Web Security Scanning
+          </div>
+          <div class="feature-text">
+            Identify XSS, CSRF, injection vulnerabilities and misconfigured security headers
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">
+            <span class="feature-icon">📝</span>
+            Code Analysis
+          </div>
+          <div class="feature-text">
+            Detect vulnerabilities in JavaScript, Python, Java and PHP code
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">
+            <span class="feature-icon">📊</span>
+            Detailed Reports
+          </div>
+          <div class="feature-text">
+            Comprehensive findings with severity ratings and remediation steps
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-snippet">
+        <span class="code-comment">// Example vulnerability: XSS Attack Vector</span>
+        <br>
+        <span class="code-keyword">function</span> <span class="code-function">displayUserData</span>() {
+        <br>&nbsp;&nbsp;<span class="code-keyword">const</span> userId = getUserInput(<span class="code-string">'user-id'</span>);
+        <br>&nbsp;&nbsp;
+        <br>&nbsp;&nbsp;<span class="code-comment">// Vulnerability: Direct DOM manipulation</span>
+        <br>&nbsp;&nbsp;document.getElementById(<span class="code-string">'user-data'</span>).innerHTML = data.name;
+        <br>}
+      </div>
+      
+      <div class="footer">
+        <div class="github">
+          <span class="github-icon">GitHub.com</span>
+          Browser-based security scanning tool
+        </div>
+        <div class="badge">Open Source</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
