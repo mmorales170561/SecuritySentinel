@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PageNav } from "@/components/layout/page-nav";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { format } from "date-fns";
 import { Download, Eye, Filter } from "lucide-react";
@@ -146,12 +147,10 @@ export default function History() {
   
   return (
     <div className="container py-10 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Scan History</h1>
-        <p className="text-muted-foreground mt-2">
-          View and analyze past security scans
-        </p>
-      </div>
+      <PageNav
+        title="Scan History"
+        description="View and analyze past security scans"
+      />
       
       {/* Main content - either show scan history or results */}
       {selectedScanId ? (

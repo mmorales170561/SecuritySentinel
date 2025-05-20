@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PageNav } from "@/components/layout/page-nav";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
@@ -423,12 +424,10 @@ View complete results on the SonarQube dashboard.
   
   return (
     <div className="container py-10 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Security Tools Integration</h1>
-        <p className="text-muted-foreground mt-2">
-          Access and run popular security tools directly from the web interface
-        </p>
-      </div>
+      <PageNav
+        title="Security Tools Integration"
+        description="Access and run popular security tools directly from the web interface"
+      />
       
       <Alert className="mb-6">
         <AlertCircle className="h-4 w-4" />
