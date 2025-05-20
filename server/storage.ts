@@ -80,7 +80,15 @@ export class MemStorage implements IStorage {
   // Scan methods
   async createScan(insertScan: InsertScan): Promise<Scan> {
     const id = this.currentScanId++;
-    const scan: Scan = { ...insertScan, id };
+    // Ensure required fields have default values 
+    const scan: Scan = { 
+      ...insertScan,
+      id,
+      options: insertScan.options || {},
+      startedAt: insertScan.startedAt || new Date(),
+      findings: insertScan.findings || null,
+      completedAt: insertScan.completedAt || null
+    };
     this.scans.set(id, scan);
     return scan;
   }
@@ -117,7 +125,16 @@ export class MemStorage implements IStorage {
   // Finding methods
   async createFinding(insertFinding: InsertFinding): Promise<Finding> {
     const id = this.currentFindingId++;
-    const finding: Finding = { ...insertFinding, id };
+    // Ensure required fields have default values
+    const finding: Finding = { 
+      ...insertFinding, 
+      id,
+      evidence: insertFinding.evidence || null,
+      impact: insertFinding.impact || null,
+      remediation: insertFinding.remediation || null,
+      falsePositive: insertFinding.falsePositive || false,
+      verified: insertFinding.verified || false
+    };
     this.findings.set(id, finding);
     return finding;
   }
