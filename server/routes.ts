@@ -12,8 +12,13 @@ import {
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
+import scannerRoutes from "./routes/scanner-routes";
+
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
+  
+  // Register custom scanner routes
+  app.use('/api/scanners', scannerRoutes);
   
   // WebSocket server for real-time updates
   const wss = new WebSocketServer({ 

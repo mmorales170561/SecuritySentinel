@@ -149,13 +149,27 @@ export function Sidebar({ isMobileOpen, closeMobileMenu }: SidebarProps) {
               <Link href="/tools">
                 <a
                   className={`flex items-center px-3 py-2 rounded-md ${
-                    location.includes("tools")
+                    location === "/tools"
                       ? "bg-primary bg-opacity-20 text-primary"
                       : "hover:bg-gray-800 text-gray-300"
                   }`}
                 >
                   <span className="material-icons text-sm mr-3">build</span>
-                  <span>Security Tools</span>
+                  <span>Integrated Tools</span>
+                </a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/custom-tools">
+                <a
+                  className={`flex items-center px-3 py-2 rounded-md ${
+                    location === "/custom-tools"
+                      ? "bg-primary bg-opacity-20 text-primary"
+                      : "hover:bg-gray-800 text-gray-300"
+                  }`}
+                >
+                  <span className="material-icons text-sm mr-3">security</span>
+                  <span>Custom Security Scanners</span>
                 </a>
               </Link>
             </li>
