@@ -1,6 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { RiskDashboard } from "@/components/dashboard/risk-dashboard";
+import { PageNav } from "@/components/layout/page-nav";
 import { getQueryFn } from "@/lib/queryClient";
 
 export default function Dashboard() {
@@ -27,12 +28,10 @@ export default function Dashboard() {
 
   return (
     <div className="container py-10 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Vulnerability Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Interactive visualizations of your security posture and risk metrics
-        </p>
-      </div>
+      <PageNav
+        title="Vulnerability Dashboard"
+        description="Interactive visualizations of your security posture and risk metrics"
+      />
 
       <RiskDashboard 
         scans={scans || []} 

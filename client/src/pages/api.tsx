@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScanningProgress } from "@/components/scanning-progress";
 import { ScanResults } from "@/components/scan-results";
+import { PageNav } from "@/components/layout/page-nav";
 import { useScan } from "@/hooks/use-scan";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -143,12 +144,10 @@ export default function ApiTesting() {
   
   return (
     <div className="container py-10 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">API Security Testing</h1>
-        <p className="text-muted-foreground mt-2">
-          Test REST APIs for security vulnerabilities and data leakage
-        </p>
-      </div>
+      <PageNav
+        title="API Security Testing"
+        description="Test REST APIs for security vulnerabilities and data leakage"
+      />
       
       <Tabs defaultValue="test" className="space-y-4">
         <TabsList>

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ScanningProgress } from "@/components/scanning-progress";
 import { ScanResults } from "@/components/scan-results";
+import { PageNav } from "@/components/layout/page-nav";
 import { useScan } from "@/hooks/use-scan";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -115,12 +116,10 @@ export default function RepositoryScan() {
   
   return (
     <div className="container py-10 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Repository Security Scan</h1>
-        <p className="text-muted-foreground mt-2">
-          Analyze repositories for security vulnerabilities, credentials leakage, and outdated dependencies
-        </p>
-      </div>
+      <PageNav
+        title="Repository Security Scan"
+        description="Analyze repositories for security vulnerabilities, credentials leakage, and outdated dependencies"
+      />
       
       <Tabs defaultValue="scan" className="space-y-4">
         <TabsList>
