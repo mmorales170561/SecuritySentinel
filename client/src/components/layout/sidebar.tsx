@@ -1,7 +1,12 @@
 import { useRef, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 
-export function Sidebar({ isMobileOpen, closeMobileMenu }) {
+interface SidebarProps {
+  isMobileOpen: boolean;
+  closeMobileMenu: () => void;
+}
+
+export function Sidebar({ isMobileOpen, closeMobileMenu }: SidebarProps) {
   const [location] = useLocation();
   const sidebarRef = useRef<HTMLElement>(null);
   
@@ -48,6 +53,20 @@ export function Sidebar({ isMobileOpen, closeMobileMenu }) {
             Analysis Types
           </h2>
           <ul className="space-y-2">
+            <li>
+              <Link href="/dashboard">
+                <a
+                  className={`flex items-center px-3 py-2 rounded-md ${
+                    location.includes("dashboard")
+                      ? "bg-primary bg-opacity-20 text-primary"
+                      : "hover:bg-gray-800 text-gray-300"
+                  }`}
+                >
+                  <span className="material-icons text-sm mr-3">dashboard</span>
+                  <span>Risk Dashboard</span>
+                </a>
+              </Link>
+            </li>
             <li>
               <Link href="/">
                 <a
