@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Scanner Dashboard</title>
+  <meta name="description" content="A comprehensive security scanning tool for web vulnerability assessment and code analysis">
+  
+  <!-- Open Graph tags for better social media sharing -->
+  <meta property="og:title" content="Security Scanner Dashboard">
+  <meta property="og:description" content="A comprehensive security scanning tool for web vulnerability assessment and code analysis">
+  <meta property="og:type" content="website">
+  
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --dark-bg: #0f172a;
+      --dark-surface: #1e293b;
+      --dark-border: #334155;
+      --text-white: #f8fafc;
+      --text-gray: #94a3b8;
+      --text-gray-dark: #64748b;
+      --critical: #ef4444;
+      --high: #f97316;
+      --medium: #f59e0b;
+      --low: #10b981;
+      --info: #6366f1;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--text-white);
+      line-height: 1.5;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    
+    header {
+      background-color: var(--dark-surface);
+      border-bottom: 1px solid var(--dark-border);
+      padding: 1rem 0;
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-white);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .menu-button {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-white);
+      cursor: pointer;
+    }
+    
+    .layout {
+      display: flex;
+      min-height: calc(100vh - 4rem);
+    }
+    
+    .sidebar {
+      width: 250px;
+      background-color: var(--dark-surface);
+      border-right: 1px solid var(--dark-border);
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+    }
+    
+    .sidebar-nav {
+      padding: 1rem;
+    }
+    
+    .sidebar-section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .sidebar-heading {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-gray-dark);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    
+    .nav-list {
+      list-style: none;
+    }
+    
+    .nav-item {
+      margin-bottom: 0.5rem;
+    }
+    
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      color: var(--text-gray);
+      text-decoration: none;
+      border-radius: 0.375rem;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-white);
+    }
+    
+    .nav-link.active {
+      background-color: rgba(59, 130, 246, 0.2);
+      color: var(--primary);
+    }
+    
+    .nav-icon {
+      margin-right: 0.75rem;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    main {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+    
+    .page-header {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--dark-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+    
+    .page-description {
+      color: var(--text-gray);
+      margin-top: 0.25rem;
+    }
+    
+    .home-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background-color: var(--dark-surface);
+      color: var(--text-white);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .home-button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .tabs {
+      margin-bottom: 1.5rem;
+    }
+    
+    .tab-list {
+      display: flex;
+      background-color: var(--dark-surface);
+      border-radius: 0.375rem;
+      overflow: hidden;
+    }
+    
+    .tab-trigger {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      text-align: center;
+      font-size: 0.875rem;
+      background: none;
+      border: none;
+      color: var(--text-gray);
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    
+    .tab-trigger.active {
+      background-color: rgba(59, 130, 246, 0.2);
+      color: var(--primary);
+    }
+    
+    .tab-content {
+      display: none;
+      margin-top: 1rem;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .card {
+      background-color: var(--dark-surface);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      background-color: var(--dark-bg);
+      color: var(--text-white);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+    
+    .input-group {
+      position: relative;
+    }
+    
+    .input-icon {
+      position: absolute;
+      top: 50%;
+      left: 0.75rem;
+      transform: translateY(-50%);
+      color: var(--text-gray);
+    }
+    
+    .input-with-icon {
+      padding-left: 2.5rem;
+    }
+    
+    .form-select {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      background-color: var(--dark-bg);
+      color: var(--text-white);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+      background-size: 1.5em 1.5em;
+    }
+    
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+    }
+    
+    .checkbox-input {
+      width: 1rem;
+      height: 1rem;
+      background-color: var(--dark-bg);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.25rem;
+      appearance: none;
+      cursor: pointer;
+    }
+    
+    .checkbox-input:checked {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 13l4 4L19 7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 0.75rem;
+    }
+    
+    .checkbox-label {
+      font-size: 0.875rem;
+      color: var(--text-gray);
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    
+    .btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 0.375rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+    
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--text-white);
+      border-color: var(--dark-border);
+    }
+    
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .progress-container {
+      background-color: var(--dark-surface);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .progress-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+    
+    .progress-bar-container {
+      height: 0.5rem;
+      background-color: var(--dark-bg);
+      border-radius: 1rem;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background-color: var(--primary);
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+    
+    .progress-detail {
+      color: var(--text-gray);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+    
+    .progress-log {
+      background-color: var(--dark-bg);
+      border-radius: 0.375rem;
+      padding: 1rem;
+      height: 10rem;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 0.875rem;
+      white-space: pre-wrap;
+      color: var(--text-gray);
+    }
+    
+    .progress-log-entry {
+      margin-bottom: 0.25rem;
+    }
+    
+    .results-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .stat-card {
+      background-color: var(--dark-surface);
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--text-gray);
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-critical .stat-value {
+      color: var(--critical);
+    }
+    
+    .stat-high .stat-value {
+      color: var(--high);
+    }
+    
+    .stat-medium .stat-value {
+      color: var(--medium);
+    }
+    
+    .stat-low .stat-value {
+      color: var(--low);
+    }
+    
+    .stat-info .stat-value {
+      color: var(--info);
+    }
+    
+    .finding-card {
+      background-color: var(--dark-surface);
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    
+    .finding-header {
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border-bottom: 1px solid var(--dark-border);
+    }
+    
+    .finding-title {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .severity-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    
+    .severity-critical {
+      background-color: rgba(239, 68, 68, 0.2);
+      color: var(--critical);
+    }
+    
+    .severity-high {
+      background-color: rgba(249, 115, 22, 0.2);
+      color: var(--high);
+    }
+    
+    .severity-medium {
+      background-color: rgba(245, 158, 11, 0.2);
+      color: var(--medium);
+    }
+    
+    .severity-low {
+      background-color: rgba(16, 185, 129, 0.2);
+      color: var(--low);
+    }
+    
+    .severity-info {
+      background-color: rgba(99, 102, 241, 0.2);
+      color: var(--info);
+    }
+    
+    .finding-body {
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    
+    .finding-body.open {
+      padding: 1rem;
+      max-height: 1000px;
+      transition: max-height 0.5s ease, padding 0.3s ease;
+    }
+    
+    .finding-section {
+      margin-bottom: 1rem;
+    }
+    
+    .finding-section-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    .finding-content {
+      color: var(--text-gray);
+      font-size: 0.875rem;
+    }
+    
+    .code-block {
+      background-color: var(--dark-bg);
+      border-radius: 0.375rem;
+      padding: 1rem;
+      font-family: monospace;
+      white-space: pre-wrap;
+      overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+    
+    .tab-area {
+      margin-top: 1rem;
+    }
+    
+    .code-tab-list {
+      display: flex;
+      border-bottom: 1px solid var(--dark-border);
+      margin-bottom: 1rem;
+    }
+    
+    .code-tab {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      background: none;
+      border: none;
+      color: var(--text-gray);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    
+    .code-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    
+    .code-tab-content {
+      display: none;
+    }
+    
+    .code-tab-content.active {
+      display: block;
+    }
+    
+    @media (max-width: 768px) {
+      .menu-button {
+        display: flex;
+        align-items: center;
+      }
+      
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 50;
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .form-row {
+        flex-direction: column;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <span class="material-icons">security</span>
+        Security Scanner
+      </div>
+      <button class="menu-button" id="menu-toggle">
+        <span class="material-icons">menu</span>
+      </button>
+    </div>
+  </header>
+  
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-nav">
+        <div class="sidebar-section">
+          <h2 class="sidebar-heading">Analysis Types</h2>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="#" class="nav-link" data-page="dashboard">
+                <span class="nav-icon material-icons">dashboard</span>
+                Risk Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link active" data-page="web-scan">
+                <span class="nav-icon material-icons">language</span>
+                Web Security Scan
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link" data-page="code-analysis">
+                <span class="nav-icon material-icons">code</span>
+                Code Analysis
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link" data-page="network-scan">
+                <span class="nav-icon material-icons">network_check</span>
+                Network Scan
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link" data-page="api-testing">
+                <span class="nav-icon material-icons">terminal</span>
+                API Testing
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link" data-page="repository-scan">
+                <span class="nav-icon material-icons">source</span>
+                Repository Scan
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h2 class="sidebar-heading">Tools</h2>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="#" class="nav-link" data-page="integrated-tools">
+                <span class="nav-icon material-icons">build</span>
+                Integrated Tools
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link" data-page="custom-scanners">
+                <span class="nav-icon material-icons">security</span>
+                Custom Security Scanners
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h2 class="sidebar-heading">Reports</h2>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="#" class="nav-link" data-page="scan-history">
+                <span class="nav-icon material-icons">history</span>
+                Scan History
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+    
+    <main>
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Web Security Scan</h1>
+          <p class="page-description">Identify security vulnerabilities in web applications</p>
+        </div>
+        <button class="home-button" id="home-button">
+          <span class="material-icons">home</span>
+          <span class="home-text">Back to Home</span>
+        </button>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab-list">
+          <button class="tab-trigger active" data-tab="web">Web Security Scan</button>
+          <button class="tab-trigger" data-tab="code">Code Analysis</button>
+        </div>
+        
+        <div class="tab-content active" data-tab-content="web">
+          <div class="card">
+            <h2 class="card-title">Web Security Scan</h2>
+            <form id="web-scan-form">
+              <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                  <label for="url-input" class="form-label">Target URL or Repository</label>
+                  <div class="input-group">
+                    <span class="input-icon material-icons">link</span>
+                    <input type="text" id="url-input" class="form-input input-with-icon" placeholder="https://example.com or github.com/user/repo" value="example.com">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="scan-type" class="form-label">Scan Type</label>
+                  <select id="scan-type" class="form-select">
+                    <option value="full">Full Scan</option>
+                    <option value="quick" selected>Quick Scan</option>
+                    <option value="authentication">Authentication</option>
+                    <option value="injection">Injection Vulnerabilities</option>
+                    <option value="xss">XSS Vulnerabilities</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <div class="form-checkbox">
+                  <input type="checkbox" id="use-proxy" class="checkbox-input">
+                  <label for="use-proxy" class="checkbox-label">Use Proxy</label>
+                </div>
+                <div class="form-checkbox">
+                  <input type="checkbox" id="use-auth" class="checkbox-input">
+                  <label for="use-auth" class="checkbox-label">Authentication Required</label>
+                </div>
+                <div class="form-checkbox">
+                  <input type="checkbox" id="passive-only" class="checkbox-input">
+                  <label for="passive-only" class="checkbox-label">Passive Scan Only</label>
+                </div>
+              </div>
+              
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary">
+                  Advanced Options
+                </button>
+                <button type="submit" class="btn btn-primary" id="start-scan-btn">
+                  <span class="material-icons">search</span>
+                  Start Scan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <div class="tab-content" data-tab-content="code">
+          <div class="card">
+            <h2 class="card-title">Code Analysis</h2>
+            <form id="code-analysis-form">
+              <div class="form-group">
+                <label for="code-language" class="form-label">Programming Language</label>
+                <select id="code-language" class="form-select">
+                  <option value="javascript">JavaScript</option>
+                  <option value="python">Python</option>
+                  <option value="java">Java</option>
+                  <option value="php">PHP</option>
+                  <option value="csharp">C#</option>
+                  <option value="ruby">Ruby</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="code-input" class="form-label">Code to Analyze</label>
+                <textarea id="code-input" class="form-input" rows="10" style="font-family: monospace;">function getUserInput(id) {
+  const element = document.getElementById(id);
+  return element.value;
+}
+
+function displayUserData() {
+  const userId = getUserInput('user-id');
+  document.getElementById('user-data').innerHTML = 
+    "User ID: " + userId;
+  
+  // Fetch user data from server
+  fetch('/api/users/' + userId)
+    .then(response => response.json())
+    .then(data => {
+      // Insert the user data into the page
+      document.getElementById('user-data').innerHTML = data.name;
+    });
+}</textarea>
+              </div>
+              
+              <div class="form-group">
+                <div class="form-checkbox">
+                  <input type="checkbox" id="check-security" class="checkbox-input" checked>
+                  <label for="check-security" class="checkbox-label">Security Vulnerabilities</label>
+                </div>
+                <div class="form-checkbox">
+                  <input type="checkbox" id="check-quality" class="checkbox-input" checked>
+                  <label for="check-quality" class="checkbox-label">Code Quality Issues</label>
+                </div>
+                <div class="form-checkbox">
+                  <input type="checkbox" id="suggest-fixes" class="checkbox-input" checked>
+                  <label for="suggest-fixes" class="checkbox-label">Suggest Fixes</label>
+                </div>
+              </div>
+              
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary">
+                  Load from Repository
+                </button>
+                <button type="submit" class="btn btn-primary" id="analyze-code-btn">
+                  <span class="material-icons">code</span>
+                  Analyze Code
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="scan-progress" class="progress-container" style="display: none;">
+        <div class="progress-header">
+          <h3 class="progress-title">Scanning <span id="scan-target">example.com</span></h3>
+          <button class="btn btn-secondary" id="stop-scan-btn">
+            <span class="material-icons">stop</span>
+            Stop Scan
+          </button>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="scan-progress-bar"></div>
+        </div>
+        <div class="progress-detail">
+          <span id="scan-progress-text">0%</span> complete - <span id="scan-status">Initializing scan...</span>
+        </div>
+        <div class="progress-log" id="scan-log">
+          <div class="progress-log-entry">[INFO] Initializing security scan...</div>
+          <div class="progress-log-entry">[INFO] Target: example.com</div>
+        </div>
+      </div>
+      
+      <div id="scan-results" style="display: none;">
+        <div class="results-container">
+          <div class="stat-card stat-critical">
+            <div class="stat-label">Critical Vulnerabilities</div>
+            <div class="stat-value" id="critical-count">0</div>
+            <div class="stat-description">Require immediate action</div>
+          </div>
+          <div class="stat-card stat-high">
+            <div class="stat-label">High Vulnerabilities</div>
+            <div class="stat-value" id="high-count">0</div>
+            <div class="stat-description">Significant security risk</div>
+          </div>
+          <div class="stat-card stat-medium">
+            <div class="stat-label">Medium Vulnerabilities</div>
+            <div class="stat-value" id="medium-count">0</div>
+            <div class="stat-description">Potential security concerns</div>
+          </div>
+          <div class="stat-card stat-low">
+            <div class="stat-label">Low Vulnerabilities</div>
+            <div class="stat-value" id="low-count">0</div>
+            <div class="stat-description">Minor security issues</div>
+          </div>
+          <div class="stat-card stat-info">
+            <div class="stat-label">Informational Findings</div>
+            <div class="stat-value" id="info-count">0</div>
+            <div class="stat-description">General recommendations</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2 class="card-title">Security Findings</h2>
+          <div id="findings-list">
+            <!-- Findings will be added here -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script>
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+    
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (event) => {
+      if (sidebar.classList.contains('open') && 
+          !sidebar.contains(event.target) && 
+          !menuToggle.contains(event.target)) {
+        sidebar.classList.remove('open');
+      }
+    });
+    
+    // Tab switching
+    const tabTriggers = document.querySelectorAll('.tab-trigger');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabTriggers.forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const tabName = trigger.getAttribute('data-tab');
+        
+        // Set active tab trigger
+        tabTriggers.forEach(t => t.classList.remove('active'));
+        trigger.classList.add('active');
+        
+        // Show active tab content
+        tabContents.forEach(content => {
+          if (content.getAttribute('data-tab-content') === tabName) {
+            content.classList.add('active');
+          } else {
+            content.classList.remove('active');
+          }
+        });
+      });
+    });
+    
+    // Simulate scan process
+    const webScanForm = document.getElementById('web-scan-form');
+    const codeAnalysisForm = document.getElementById('code-analysis-form');
+    const scanProgress = document.getElementById('scan-progress');
+    const scanResults = document.getElementById('scan-results');
+    const scanProgressBar = document.getElementById('scan-progress-bar');
+    const scanProgressText = document.getElementById('scan-progress-text');
+    const scanStatus = document.getElementById('scan-status');
+    const scanLog = document.getElementById('scan-log');
+    const scanTarget = document.getElementById('scan-target');
+    const stopScanBtn = document.getElementById('stop-scan-btn');
+    
+    let scanInterval;
+    let currentProgress = 0;
+    let scanFinished = false;
+    
+    function startScan(isCodeScan = false) {
+      const targetInput = isCodeScan ? 
+        document.getElementById('code-language').value : 
+        document.getElementById('url-input').value;
+      
+      scanTarget.textContent = targetInput;
+      scanProgress.style.display = 'block';
+      scanResults.style.display = 'none';
+      scanFinished = false;
+      currentProgress = 0;
+      updateProgressBar(0);
+      
+      // Clear previous logs
+      scanLog.innerHTML = '';
+      addLogEntry(`[INFO] Initializing ${isCodeScan ? 'code analysis' : 'security scan'}...`);
+      addLogEntry(`[INFO] Target: ${targetInput}`);
+      
+      const logMessages = isCodeScan ? 
+        [
+          '[INFO] Loading analysis engine...',
+          '[INFO] Parsing code...',
+          `[INFO] Analyzing ${targetInput} code for security vulnerabilities...`,
+          '[INFO] Checking for injection vulnerabilities...',
+          '[INFO] Analyzing input validation...',
+          '[INFO] Checking for XSS vulnerabilities...',
+          '[INFO] Analyzing authentication mechanisms...',
+          '[INFO] Checking for insecure direct object references...',
+          '[INFO] Analyzing error handling...',
+          '[INFO] Finalizing results...'
+        ] : 
+        [
+          '[INFO] Loading scan profile...',
+          '[INFO] Resolving target...',
+          '[INFO] Checking for open ports...',
+          '[INFO] Scanning for known vulnerabilities...',
+          '[INFO] Analyzing HTTP headers...',
+          '[INFO] Checking SSL/TLS configuration...',
+          '[INFO] Testing for XSS vulnerabilities...',
+          '[INFO] Testing for SQL injection...',
+          '[INFO] Analyzing authentication mechanisms...',
+          '[INFO] Finalizing results...'
+        ];
+      
+      let logIndex = 0;
+      scanInterval = setInterval(() => {
+        if (currentProgress < 100) {
+          const increment = Math.floor(Math.random() * 10) + 5;
+          currentProgress = Math.min(currentProgress + increment, 100);
+          updateProgressBar(currentProgress);
+          
+          if (logIndex < logMessages.length) {
+            addLogEntry(logMessages[logIndex]);
+            logIndex++;
+          }
+          
+          if (currentProgress === 100) {
+            scanFinished = true;
+            clearInterval(scanInterval);
+            completeScan(isCodeScan);
+          }
+        }
+      }, 800);
+    }
+    
+    function updateProgressBar(progress) {
+      scanProgressBar.style.width = `${progress}%`;
+      scanProgressText.textContent = `${progress}%`;
+      
+      if (progress < 30) {
+        scanStatus.textContent = 'Initializing scan...';
+      } else if (progress < 60) {
+        scanStatus.textContent = 'Scanning target...';
+      } else if (progress < 90) {
+        scanStatus.textContent = 'Analyzing results...';
+      } else {
+        scanStatus.textContent = 'Finalizing report...';
+      }
+    }
+    
+    function addLogEntry(message) {
+      const entry = document.createElement('div');
+      entry.className = 'progress-log-entry';
+      entry.textContent = message;
+      scanLog.appendChild(entry);
+      scanLog.scrollTop = scanLog.scrollHeight;
+    }
+    
+    function completeScan(isCodeScan) {
+      addLogEntry(`[INFO] ${isCodeScan ? 'Analysis' : 'Scan'} completed successfully`);
+      setTimeout(() => {
+        scanProgress.style.display = 'none';
+        scanResults.style.display = 'block';
+        generateResults(isCodeScan);
+      }, 1000);
+    }
+    
+    function generateResults(isCodeScan) {
+      // Generate random counts for severity levels
+      const criticalCount = isCodeScan ? Math.floor(Math.random() * 2) : Math.floor(Math.random() * 3);
+      const highCount = Math.floor(Math.random() * 4) + 1;
+      const mediumCount = Math.floor(Math.random() * 5) + 2;
+      const lowCount = Math.floor(Math.random() * 6) + 3;
+      const infoCount = Math.floor(Math.random() * 4) + 2;
+      
+      // Update the count displays
+      document.getElementById('critical-count').textContent = criticalCount;
+      document.getElementById('high-count').textContent = highCount;
+      document.getElementById('medium-count').textContent = mediumCount;
+      document.getElementById('low-count').textContent = lowCount;
+      document.getElementById('info-count').textContent = infoCount;
+      
+      // Clear previous findings
+      const findingsList = document.getElementById('findings-list');
+      findingsList.innerHTML = '';
+      
+      // Generate findings based on scan type
+      if (isCodeScan) {
+        // Code analysis findings
+        generateCodeFinding('critical', 'Cross-Site Scripting (XSS) Vulnerability', 
+          'Unsanitized user input is directly inserted into the DOM, leading to potential XSS attacks.', 
+          "document.getElementById('user-data').innerHTML = data.name;", 
+          "User input from the API response is directly inserted into the DOM without sanitization.");
+        
+        generateCodeFinding('high', 'URL Injection Vulnerability',
+          'User input is directly concatenated into a URL, potentially allowing for URL manipulation attacks.',
+          "fetch('/api/users/' + userId)",
+          "User IDs should be validated and sanitized before being used in API calls.");
+        
+        generateCodeFinding('medium', 'Lack of Input Validation',
+          'No validation is performed on user input before processing.',
+          "const userId = getUserInput('user-id');",
+          "Input should be validated for format and content before use.");
+        
+        generateCodeFinding('low', 'Inefficient DOM Manipulation',
+          'Multiple DOM manipulations could be optimized.',
+          "document.getElementById('user-data').innerHTML = \"User ID: \" + userId;",
+          "Consider using a temporary variable to avoid multiple DOM updates.");
+      } else {
+        // Web scan findings
+        generateWebFinding('critical', 'Cross-Site Scripting (XSS) Vulnerability',
+          '/search?q=', 
+          'The search parameter is vulnerable to reflected XSS attacks.',
+          'User-supplied input is reflected in the response without proper encoding.');
+        
+        generateWebFinding('high', 'Insecure SSL/TLS Configuration',
+          'SSL/TLS', 
+          'The server is using outdated SSL/TLS protocols and cipher suites.',
+          'TLS 1.0 and TLS 1.1 are deprecated and considered insecure.');
+        
+        generateWebFinding('medium', 'Missing Security Headers',
+          'HTTP Headers', 
+          'Several important security headers are missing from HTTP responses.',
+          'Content-Security-Policy, X-XSS-Protection, and X-Frame-Options headers are not set.');
+        
+        generateWebFinding('low', 'Cookie Without Secure Flag',
+          'Cookies', 
+          'Session cookies are transmitted over unencrypted connections.',
+          'The Secure flag is not set on cookies containing sensitive information.');
+      }
+    }
+    
+    function generateWebFinding(severity, title, location, description, evidence) {
+      const findingsList = document.getElementById('findings-list');
+      
+      const findingCard = document.createElement('div');
+      findingCard.className = 'finding-card';
+      
+      const findingHeader = document.createElement('div');
+      findingHeader.className = 'finding-header';
+      findingHeader.innerHTML = `
+        <div class="finding-title">
+          <span class="severity-badge severity-${severity}">${severity}</span>
+          ${title}
+        </div>
+        <span class="material-icons">expand_more</span>
+      `;
+      findingHeader.addEventListener('click', () => {
+        const body = findingHeader.nextElementSibling;
+        body.classList.toggle('open');
+        const icon = findingHeader.querySelector('.material-icons');
+        icon.textContent = body.classList.contains('open') ? 'expand_less' : 'expand_more';
+      });
+      
+      const findingBody = document.createElement('div');
+      findingBody.className = 'finding-body';
+      findingBody.innerHTML = `
+        <div class="finding-section">
+          <div class="finding-section-title">Location</div>
+          <div class="finding-content">${location}</div>
+        </div>
+        <div class="finding-section">
+          <div class="finding-section-title">Description</div>
+          <div class="finding-content">${description}</div>
+        </div>
+        <div class="finding-section">
+          <div class="finding-section-title">Evidence</div>
+          <div class="finding-content">${evidence}</div>
+        </div>
+        <div class="finding-section">
+          <div class="finding-section-title">Recommended Fix</div>
+          <div class="finding-content">
+            ${getRecommendationByTitle(title)}
+          </div>
+        </div>
+      `;
+      
+      findingCard.appendChild(findingHeader);
+      findingCard.appendChild(findingBody);
+      findingsList.appendChild(findingCard);
+    }
+    
+    function generateCodeFinding(severity, title, description, codeSnippet, issue) {
+      const findingsList = document.getElementById('findings-list');
+      
+      const findingCard = document.createElement('div');
+      findingCard.className = 'finding-card';
+      
+      const findingHeader = document.createElement('div');
+      findingHeader.className = 'finding-header';
+      findingHeader.innerHTML = `
+        <div class="finding-title">
+          <span class="severity-badge severity-${severity}">${severity}</span>
+          ${title}
+        </div>
+        <span class="material-icons">expand_more</span>
+      `;
+      findingHeader.addEventListener('click', () => {
+        const body = findingHeader.nextElementSibling;
+        body.classList.toggle('open');
+        const icon = findingHeader.querySelector('.material-icons');
+        icon.textContent = body.classList.contains('open') ? 'expand_less' : 'expand_more';
+      });
+      
+      const findingBody = document.createElement('div');
+      findingBody.className = 'finding-body';
+      findingBody.innerHTML = `
+        <div class="finding-section">
+          <div class="finding-section-title">Description</div>
+          <div class="finding-content">${description}</div>
+        </div>
+        <div class="finding-section">
+          <div class="finding-section-title">Vulnerable Code</div>
+          <div class="finding-content">
+            <code class="code-block">${codeSnippet}</code>
+          </div>
+        </div>
+        <div class="finding-section">
+          <div class="finding-section-title">Issue</div>
+          <div class="finding-content">${issue}</div>
+        </div>
+        <div class="finding-section">
+          <div class="finding-section-title">Recommended Fix</div>
+          <div class="finding-content">
+            ${getRecommendationByTitle(title)}
+            <div class="tab-area">
+              <div class="code-tab-list">
+                <button class="code-tab active" data-code-tab="vulnerable">Vulnerable Code</button>
+                <button class="code-tab" data-code-tab="fixed">Fixed Code</button>
+              </div>
+              <div class="code-tab-content active" data-code-tab-content="vulnerable">
+                <code class="code-block">${codeSnippet}</code>
+              </div>
+              <div class="code-tab-content" data-code-tab-content="fixed">
+                <code class="code-block">${getFixedCodeByTitle(title, codeSnippet)}</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      findingCard.appendChild(findingHeader);
+      findingCard.appendChild(findingBody);
+      findingsList.appendChild(findingCard);
+      
+      // Setup code tabs
+      const codeTabs = findingBody.querySelectorAll('.code-tab');
+      const codeTabContents = findingBody.querySelectorAll('.code-tab-content');
+      
+      codeTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabName = tab.getAttribute('data-code-tab');
+          
+          // Set active tab
+          codeTabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          
+          // Show active content
+          codeTabContents.forEach(content => {
+            if (content.getAttribute('data-code-tab-content') === tabName) {
+              content.classList.add('active');
+            } else {
+              content.classList.remove('active');
+            }
+          });
+        });
+      });
+    }
+    
+    function getRecommendationByTitle(title) {
+      const recommendations = {
+        'Cross-Site Scripting (XSS) Vulnerability': 
+          'Implement proper output encoding and use safe DOM methods like textContent instead of innerHTML. Consider using a content security policy (CSP) to provide an additional layer of defense.',
+        
+        'URL Injection Vulnerability':
+          'Use a URL encoding library or built-in functions to properly encode parameters. Validate and sanitize all user input before including it in URLs.',
+        
+        'Lack of Input Validation':
+          'Implement comprehensive input validation for all user-supplied data. Use regular expressions or validation libraries to enforce proper formatting.',
+        
+        'Inefficient DOM Manipulation':
+          'Use DOM fragment or batch updates to minimize reflows and repaints. Consider using a framework that optimizes DOM updates.',
+        
+        'Insecure SSL/TLS Configuration':
+          'Disable TLS 1.0 and TLS 1.1. Configure the server to use only strong cipher suites and require TLS 1.2 or higher.',
+        
+        'Missing Security Headers':
+          'Configure your web server to include all recommended security headers. Implement a Content-Security-Policy to mitigate XSS attacks.',
+        
+        'Cookie Without Secure Flag':
+          'Set the Secure and HttpOnly flags on all sensitive cookies. Consider implementing SameSite attribute to prevent CSRF attacks.'
+      };
+      
+      return recommendations[title] || 'Review and remediate the identified vulnerability following industry best practices.';
+    }
+    
+    function getFixedCodeByTitle(title, original) {
+      const fixes = {
+        'Cross-Site Scripting (XSS) Vulnerability': 
+          original.replace('innerHTML', 'textContent'),
+        
+        'URL Injection Vulnerability':
+          original.replace("fetch('/api/users/' + userId)", "fetch(`/api/users/${encodeURIComponent(userId)}`)"),
+        
+        'Lack of Input Validation':
+          "// Validate user ID format\nif (!/^[a-zA-Z0-9_-]+$/.test(userId)) {\n  console.error('Invalid user ID format');\n  return;\n}\nconst validatedUserId = userId;",
+        
+        'Inefficient DOM Manipulation':
+          "const userDataElement = document.getElementById('user-data');\nuserDataElement.textContent = 'User ID: ' + userId;"
+      };
+      
+      return fixes[title] || original;
+    }
+    
+    // Form submission handlers
+    webScanForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      startScan(false);
+    });
+    
+    codeAnalysisForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      startScan(true);
+    });
+    
+    // Stop scan button
+    stopScanBtn.addEventListener('click', () => {
+      if (!scanFinished) {
+        clearInterval(scanInterval);
+        addLogEntry('[WARNING] Scan stopped by user');
+        addLogEntry('[INFO] Generating report with partial results');
+        scanFinished = true;
+        completeScan(document.querySelector('.tab-trigger.active').getAttribute('data-tab') === 'code');
+      }
+    });
+    
+    // Home button handler
+    document.getElementById('home-button').addEventListener('click', () => {
+      // In a real app, this would navigate home
+      alert('This would navigate to the home page in a full application.');
+    });
+    
+    // Navigation links
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Remove active class from all nav links
+        document.querySelectorAll('.nav-link').forEach(l => {
+          l.classList.remove('active');
+        });
+        
+        // Add active class to clicked link
+        link.classList.add('active');
+        
+        // Handle mobile menu close
+        if (window.innerWidth < 768) {
+          sidebar.classList.remove('open');
+        }
+        
+        // In a real app, this would navigate to the page
+        const page = link.getAttribute('data-page');
+        if (page === 'web-scan') {
+          document.querySelector('.page-title').textContent = 'Web Security Scan';
+          document.querySelector('.page-description').textContent = 'Identify security vulnerabilities in web applications';
+        } else {
+          // Just a demo - alert which page would be navigated to
+          alert(`This would navigate to the ${page.replace('-', ' ')} page in a full application.`);
+        }
+      });
+    });
+    
+    // Check for mobile window size
+    function updateMobileView() {
+      if (window.innerWidth < 768) {
+        document.querySelector('.home-text').textContent = 'Home';
+      } else {
+        document.querySelector('.home-text').textContent = 'Back to Home';
+      }
+    }
+    
+    // Initial call and event listener for resize
+    updateMobileView();
+    window.addEventListener('resize', updateMobileView);
+  </script>
+</body>
+</html>
