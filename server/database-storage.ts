@@ -7,168 +7,105 @@ import {
   type Finding, 
   type InsertFinding,
   type ScanResult,
-  findingSchema,
-  scanResultSchema,
-  type Severity,
   type WebScanRequest,
-  type CodeAnalysisRequest
+  type CodeAnalysisRequest,
+  type SeverityType,
+  findings,
+  scans,
+  users
 } from "@shared/schema";
+import { IStorage } from "./storage";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
-// Interface for storage operations
-export interface IStorage {
-  // User methods
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
-  
-  // Scan methods
-  createScan(scan: InsertScan): Promise<Scan>;
-  getScan(id: number): Promise<Scan | undefined>;
-  getScansByTarget(target: string): Promise<Scan[]>;
-  updateScanStatus(id: number, status: string, findings?: any): Promise<Scan | undefined>;
-  getAllScans(): Promise<Scan[]>;
-  
-  // Finding methods
-  createFinding(finding: InsertFinding): Promise<Finding>;
-  getFindingsByScanId(scanId: number): Promise<Finding[]>;
-  markFindingAsFalsePositive(id: number, isFalse: boolean): Promise<Finding | undefined>;
-  markFindingAsVerified(id: number, isVerified: boolean): Promise<Finding | undefined>;
-  
-  // Web scan simulation
-  simulateWebScan(request: WebScanRequest): Promise<ScanResult>;
-  
-  // Code analysis simulation
-  simulateCodeAnalysis(request: CodeAnalysisRequest): Promise<ScanResult>;
-}
-
-// In-memory implementation
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private scans: Map<number, Scan>;
-  private findings: Map<number, Finding>;
-  private currentUserId: number;
-  private currentScanId: number;
-  private currentFindingId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.scans = new Map();
-    this.findings = new Map();
-    this.currentUserId = 1;
-    this.currentScanId = 1;
-    this.currentFindingId = 1;
-  }
-
+// Database implementation of the storage interface
+export class DatabaseStorage implements IStorage {
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
-
+  
   // Scan methods
   async createScan(insertScan: InsertScan): Promise<Scan> {
-    const id = this.currentScanId++;
-    // Ensure required fields have default values 
-    const scan: Scan = { 
-      ...insertScan,
-      id,
-      options: insertScan.options || {},
-      startedAt: insertScan.startedAt || new Date(),
-      findings: insertScan.findings || null,
-      completedAt: insertScan.completedAt || null
-    };
-    this.scans.set(id, scan);
+    const [scan] = await db
+      .insert(scans)
+      .values(insertScan)
+      .returning();
     return scan;
   }
-
+  
   async getScan(id: number): Promise<Scan | undefined> {
-    return this.scans.get(id);
+    const [scan] = await db.select().from(scans).where(eq(scans.id, id));
+    return scan || undefined;
   }
-
+  
   async getScansByTarget(target: string): Promise<Scan[]> {
-    return Array.from(this.scans.values()).filter(
-      (scan) => scan.target === target,
-    );
+    return await db.select().from(scans).where(eq(scans.target, target));
   }
-
+  
   async updateScanStatus(id: number, status: string, findings?: any): Promise<Scan | undefined> {
-    const scan = await this.getScan(id);
-    if (!scan) return undefined;
-
-    const updatedScan: Scan = {
-      ...scan,
-      status,
-      findings: findings || scan.findings,
-      completedAt: status === 'completed' ? new Date() : scan.completedAt,
-    };
-
-    this.scans.set(id, updatedScan);
-    return updatedScan;
+    const [scan] = await db
+      .update(scans)
+      .set({ 
+        status, 
+        findings: findings ? findings : undefined,
+        completedAt: status === 'completed' ? new Date() : undefined
+      })
+      .where(eq(scans.id, id))
+      .returning();
+      
+    return scan || undefined;
   }
-
+  
   async getAllScans(): Promise<Scan[]> {
-    return Array.from(this.scans.values());
+    return await db.select().from(scans);
   }
-
+  
   // Finding methods
   async createFinding(insertFinding: InsertFinding): Promise<Finding> {
-    const id = this.currentFindingId++;
-    // Ensure required fields have default values
-    const finding: Finding = { 
-      ...insertFinding, 
-      id,
-      evidence: insertFinding.evidence || null,
-      impact: insertFinding.impact || null,
-      remediation: insertFinding.remediation || null,
-      falsePositive: insertFinding.falsePositive || false,
-      verified: insertFinding.verified || false
-    };
-    this.findings.set(id, finding);
+    const [finding] = await db
+      .insert(findings)
+      .values(insertFinding)
+      .returning();
     return finding;
   }
-
+  
   async getFindingsByScanId(scanId: number): Promise<Finding[]> {
-    return Array.from(this.findings.values()).filter(
-      (finding) => finding.scanId === scanId,
-    );
+    return await db.select().from(findings).where(eq(findings.scanId, scanId));
   }
-
+  
   async markFindingAsFalsePositive(id: number, isFalse: boolean): Promise<Finding | undefined> {
-    const finding = this.findings.get(id);
-    if (!finding) return undefined;
-
-    const updatedFinding: Finding = {
-      ...finding,
-      falsePositive: isFalse,
-    };
-
-    this.findings.set(id, updatedFinding);
-    return updatedFinding;
+    const [finding] = await db
+      .update(findings)
+      .set({ falsePositive: isFalse })
+      .where(eq(findings.id, id))
+      .returning();
+      
+    return finding || undefined;
   }
-
+  
   async markFindingAsVerified(id: number, isVerified: boolean): Promise<Finding | undefined> {
-    const finding = this.findings.get(id);
-    if (!finding) return undefined;
-
-    const updatedFinding: Finding = {
-      ...finding,
-      verified: isVerified,
-    };
-
-    this.findings.set(id, updatedFinding);
-    return updatedFinding;
+    const [finding] = await db
+      .update(findings)
+      .set({ verified: isVerified })
+      .where(eq(findings.id, id))
+      .returning();
+      
+    return finding || undefined;
   }
 
   // Simulate a web security scan
@@ -221,7 +158,7 @@ export class MemStorage implements IStorage {
     const findings = [
       {
         id: uuidv4(),
-        severity: "critical" as Severity,
+        severity: "critical",
         title: "Cross-Site Scripting (XSS) Vulnerability",
         location: "/search?query= parameter",
         description: "The application doesn't properly sanitize user input in the search query parameter, allowing attackers to inject malicious JavaScript code that will execute in users' browsers.",
@@ -261,7 +198,7 @@ function escapeHtml(unsafe) {
       },
       {
         id: uuidv4(),
-        severity: "critical" as Severity,
+        severity: "critical" as const,
         title: "SQL Injection Vulnerability",
         location: "/login endpoint",
         description: "The login endpoint is vulnerable to SQL injection attacks. User-supplied input is directly concatenated into an SQL query without proper parameterization.",
@@ -290,7 +227,7 @@ def authenticate(username, password):
       },
       {
         id: uuidv4(),
-        severity: "high" as Severity,
+        severity: "high" as const,
         title: "Sensitive Data Exposure",
         location: "/admin/ directory",
         description: "The application's admin directory is accessible without proper authentication, potentially exposing sensitive administrative functions and data.",
@@ -323,7 +260,7 @@ Content-Type: text/html
     if (scanType === "authentication" || scanType === "full") {
       findings.push({
         id: uuidv4(),
-        severity: "high" as Severity,
+        severity: "high" as const,
         title: "Weak Password Policy",
         location: "/signup endpoint",
         description: "The application does not enforce a strong password policy, allowing users to create accounts with weak passwords.",
@@ -345,7 +282,7 @@ Location: /dashboard`,
     if (scanType === "injection" || scanType === "full") {
       findings.push({
         id: uuidv4(),
-        severity: "medium" as Severity,
+        severity: "medium" as const,
         title: "Command Injection Vulnerability",
         location: "/api/ping endpoint",
         description: "The application's ping utility endpoint passes user input directly to a system command without proper validation.",
@@ -403,7 +340,7 @@ app.get('/api/ping', (req, res) => {
     if (language === "python" && code.includes("SELECT") && code.includes("+")) {
       findings.push({
         id: uuidv4(),
-        severity: "critical" as Severity,
+        severity: "critical" as const,
         title: "SQL Injection Vulnerability",
         location: "authenticate function",
         description: "The function concatenates user input directly into an SQL query, creating a SQL injection vulnerability.",
@@ -428,7 +365,7 @@ def authenticate(username, password):
     if (language === "javascript" && code.includes("innerHTML") && !code.includes("DOMPurify")) {
       findings.push({
         id: uuidv4(),
-        severity: "high" as Severity,
+        severity: "high" as const,
         title: "Cross-Site Scripting (XSS) Vulnerability",
         location: "DOM manipulation",
         description: "The application uses innerHTML with unsanitized user input, which can lead to XSS attacks.",
@@ -453,90 +390,67 @@ document.getElementById('output').innerHTML = DOMPurify.sanitize(userInput);`,
       });
     }
     
-    // Check for hardcoded credentials
-    if (code.includes("password") && (code.includes("=") || code.includes(":"))) {
+    // Check for insecure random numbers in JavaScript
+    if (language === "javascript" && code.includes("Math.random") && code.includes("password")) {
       findings.push({
         id: uuidv4(),
-        severity: "high" as Severity,
-        title: "Hardcoded Credentials",
-        location: "Multiple locations",
-        description: "The code contains hardcoded credentials which is a security risk.",
+        severity: "medium",
+        title: "Insecure Randomness",
+        location: "Password generation",
+        description: "The application uses Math.random() for generating security-sensitive values like passwords or tokens, which is not cryptographically secure.",
         evidence: code,
-        impact: "Hardcoded credentials can be discovered through source code access, leading to unauthorized access to systems or services.",
-        remediation: "Store sensitive information like credentials in environment variables, secure vaults, or configuration files outside of version control.",
+        impact: "Math.random() is not cryptographically secure and can be predicted by attackers, potentially leading to token or password prediction.",
+        remediation: "Use the Web Crypto API (crypto.getRandomValues) for generating secure random values in JavaScript.",
         codeFix: `// Before
-const password = "mySecretPassword123";
-const apiKey = "1a2b3c4d5e6f7g8h9i0j";
+function generatePassword(length) {
+    const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset[randomIndex];
+    }
+    return password;
+}
 
 // After
-const password = process.env.SERVICE_PASSWORD;
-const apiKey = process.env.API_KEY;`,
+function generatePassword(length) {
+    const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+    const randomValues = new Uint32Array(length);
+    crypto.getRandomValues(randomValues);
+    
+    let password = "";
+    for (let i = 0; i < length; i++) {
+        const randomIndex = randomValues[i] % charset.length;
+        password += charset[randomIndex];
+    }
+    return password;
+}`,
         falsePositive: false,
         verified: false,
       });
     }
-    
-    // Add a few generic findings to ensure we always have something to show
-    findings.push({
-      id: uuidv4(),
-      severity: "medium" as Severity,
-      title: "Insecure Cryptographic Algorithm",
-      location: "Entire codebase",
-      description: "The application uses outdated or weak cryptographic algorithms (e.g., MD5, SHA-1).",
-      evidence: code.includes("md5") || code.includes("sha1") ? 
-        "Code contains references to insecure hash algorithms: " + (code.includes("md5") ? "MD5 " : "") + (code.includes("sha1") ? "SHA-1" : "") :
-        "Application may be using insecure cryptographic practices.",
-      impact: "Weak cryptographic algorithms can be broken, potentially exposing sensitive data.",
-      remediation: "Use modern, strong cryptographic algorithms and libraries. For hashing, consider bcrypt, Argon2, or SHA-256. For encryption, use AES-256 or similar strong algorithms.",
-      falsePositive: false,
-      verified: false,
-    });
-    
-    findings.push({
-      id: uuidv4(),
-      severity: "low" as Severity,
-      title: "Missing Input Validation",
-      location: "User input handling",
-      description: "The application lacks proper input validation for user-supplied data.",
-      evidence: code,
-      impact: "Without proper validation, applications are vulnerable to various injection attacks, data corruption, or unexpected behavior.",
-      remediation: "Implement thorough input validation for all user-supplied data. Validate data types, lengths, formats, and ranges as appropriate for each input field.",
-      falsePositive: false,
-      verified: false,
-    });
-    
-    findings.push({
-      id: uuidv4(),
-      severity: "info" as Severity,
-      title: "Verbose Error Messages",
-      location: "Error handling",
-      description: "The application may return detailed error messages that could reveal sensitive information about the system.",
-      evidence: code,
-      impact: "Verbose error messages can provide attackers with information about the application's structure, technology stack, or database schema.",
-      remediation: "Implement a centralized error handling mechanism that logs detailed errors internally but returns generic error messages to users. In production, never expose stack traces or detailed error information.",
-      falsePositive: false,
-      verified: false,
-    });
     
     return findings;
   }
 
   // Helper to count findings by severity
   private countFindingsBySeverity(findings: any[]) {
-    return findings.reduce((acc, finding) => {
-      acc[finding.severity]++;
-      return acc;
-    }, {
+    const counts = {
       critical: 0,
       high: 0,
       medium: 0,
       low: 0,
-      info: 0
+      info: 0,
+    };
+    
+    findings.forEach(finding => {
+      // Make sure the severity is one of the valid keys
+      const severity = finding.severity as keyof typeof counts;
+      if (counts.hasOwnProperty(severity)) {
+        counts[severity]++;
+      }
     });
+    
+    return counts;
   }
 }
-
-import { DatabaseStorage } from "./database-storage";
-
-// Use database storage instead of memory storage
-export const storage = new DatabaseStorage();

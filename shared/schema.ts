@@ -46,6 +46,7 @@ export const scanOptionsSchema = z.object({
 
 // Severity type
 export const severityEnum = z.enum(["critical", "high", "medium", "low", "info"]);
+export type SeverityType = z.infer<typeof severityEnum>;
 
 // Finding schema
 export const findingSchema = z.object({
