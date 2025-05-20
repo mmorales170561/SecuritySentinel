@@ -158,7 +158,7 @@ export class DatabaseStorage implements IStorage {
     const findings = [
       {
         id: uuidv4(),
-        severity: "critical",
+        severity: "critical" as SeverityType,
         title: "Cross-Site Scripting (XSS) Vulnerability",
         location: "/search?query= parameter",
         description: "The application doesn't properly sanitize user input in the search query parameter, allowing attackers to inject malicious JavaScript code that will execute in users' browsers.",
