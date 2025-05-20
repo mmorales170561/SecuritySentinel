@@ -2,6 +2,8 @@
 
 A comprehensive security scanning tool for web vulnerability assessment and code analysis that runs entirely in the browser. This application can identify security issues in websites and code without requiring any server-side processing.
 
+![Security Scanner Dashboard](preview.png)
+
 ## Features
 
 - **Web Security Scanning**: Analyze websites for common security vulnerabilities

@@ -1890,6 +1890,14 @@ function displayUserData() {
           
           document.querySelectorAll('.tool-btn').forEach(btn => {
             btn.addEventListener('click', () => {
+              // Get the tool name
+              const toolName = btn.closest('.tool-card').querySelector('.tool-name').textContent;
+              
+              // Update page title to show which tool is being used
+              document.querySelector('.page-title').textContent = `Using ${toolName}`;
+              document.querySelector('.page-description').textContent = `Scanning with integrated ${toolName} tool`;
+              
+              // Start the scan with the selected tool
               startScan(false);
             });
           });
