@@ -1,0 +1,174 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 207 90% 54%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 60 4.8% 95.9%;
+  --secondary-foreground: 24 9.8% 10%;
+  --accent: 60 4.8% 95.9%;
+  --accent-foreground: 24 9.8% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 20 14.3% 4.1%;
+  --radius: 0.5rem;
+  
+  /* Severity colors */
+  --severity-critical: 4 90% 58%;
+  --severity-high: 36 100% 50%;
+  --severity-medium: 45 100% 51%;
+  --severity-low: 122 39% 49%;
+  --severity-info: 207 90% 54%;
+  
+  /* Dark theme sidebar colors */
+  --sidebar-background: 0 0% 12%;
+  --sidebar-foreground: 0 0% 88%;
+  --sidebar-primary: 207 90% 54%;
+  --sidebar-primary-foreground: 211 100% 99%;
+  --sidebar-accent: 0 0% 19%;
+  --sidebar-accent-foreground: 0 0% 88%;
+  --sidebar-border: 0 0% 20%;
+  --sidebar-ring: 0 0% 83.9%;
+  
+  /* Dark surface background */
+  --dark-surface: 0 0% 12%;
+  --dark-border: 0 0% 20%;
+  --dark-bg: 0 0% 7%;
+}
+
+.dark {
+  --background: 0 0% 7%;
+  --foreground: 0 0% 88%;
+  --muted: 0 0% 15.9%;
+  --muted-foreground: 0 0% 64.9%;
+  --popover: 0 0% 7%;
+  --popover-foreground: 0 0% 88%;
+  --card: 0 0% 12%;
+  --card-foreground: 0 0% 88%;
+  --border: 0 0% 20%;
+  --input: 0 0% 15.9%;
+  --primary: 207 90% 54%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 0 0% 15.9%;
+  --secondary-foreground: 0 0% 88%;
+  --accent: 0 0% 15.9%;
+  --accent-foreground: 0 0% 88%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 88%;
+  --ring: 0 0% 83.9%;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+.severity-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.scan-result-card {
+  transition: all 0.2s ease;
+}
+
+.scan-result-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.code-editor {
+  min-height: 200px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--dark-surface));
+}
+
+::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.text-severity-critical {
+  color: hsl(var(--severity-critical));
+}
+
+.text-severity-high {
+  color: hsl(var(--severity-high));
+}
+
+.text-severity-medium {
+  color: hsl(var(--severity-medium));
+}
+
+.text-severity-low {
+  color: hsl(var(--severity-low));
+}
+
+.text-severity-info {
+  color: hsl(var(--severity-info));
+}
+
+.bg-severity-critical {
+  background-color: hsl(var(--severity-critical));
+}
+
+.bg-severity-high {
+  background-color: hsl(var(--severity-high));
+}
+
+.bg-severity-medium {
+  background-color: hsl(var(--severity-medium));
+}
+
+.bg-severity-low {
+  background-color: hsl(var(--severity-low));
+}
+
+.bg-severity-info {
+  background-color: hsl(var(--severity-info));
+}
+
+.bg-dark-bg {
+  background-color: hsl(var(--dark-bg));
+}
+
+.bg-dark-surface {
+  background-color: hsl(var(--dark-surface));
+}
+
+.border-dark-border {
+  border-color: hsl(var(--dark-border));
+}
