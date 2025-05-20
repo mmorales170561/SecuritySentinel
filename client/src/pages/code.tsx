@@ -7,15 +7,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function CodeAnalysis() {
   const [scanId, setScanId] = useState<number | null>(null);
-  const { scan, log, progress } = useScan(scanId);
+  const { isScanning, progress, logs, target, findings, severityCounts, stopScan, scanTimeAgo } = useScan(scanId);
   
   const handleAnalysisStart = (id: number) => {
     setScanId(id);
-  };
-  
-  const handleStopScan = () => {
-    // In a real application, this would call an API to stop the scan
-    console.log("Stopping scan", scanId);
   };
   
   return (
@@ -30,36 +25,30 @@ export default function CodeAnalysis() {
       <Tabs defaultValue="scan" className="space-y-4">
         <TabsList>
           <TabsTrigger value="scan">Code Analysis</TabsTrigger>
-          {scan?.status === "completed" && (
+          {!isScanning && findings.length > 0 && (
             <TabsTrigger value="results">Results</TabsTrigger>
           )}
         </TabsList>
         
         <TabsContent value="scan" className="space-y-4">
-          {!scanId || scan?.status === "completed" ? (
+          {!scanId || (!isScanning && findings.length > 0) ? (
             <CodeAnalysisForm onAnalysisStart={handleAnalysisStart} />
           ) : (
             <ScanningProgress
-              target={scan?.target || "Code snippet"}
+              target={target || "Code snippet"}
               progress={progress}
-              log={log}
-              onStopScan={handleStopScan}
+              log={logs}
+              onStopScan={stopScan}
             />
           )}
         </TabsContent>
         
-        {scan?.status === "completed" && (
+        {!isScanning && findings.length > 0 && (
           <TabsContent value="results">
             <ScanResults
-              findings={scan.findings || []}
-              scanTime={scan.completedAt ? new Date(scan.completedAt).toLocaleString() : undefined}
-              severityCounts={scan.stats || {
-                critical: 0,
-                high: 0,
-                medium: 0,
-                low: 0,
-                info: 0
-              }}
+              findings={findings}
+              scanTime={scanTimeAgo}
+              severityCounts={severityCounts}
             />
           </TabsContent>
         )}
