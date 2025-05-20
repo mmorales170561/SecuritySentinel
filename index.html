@@ -1449,8 +1449,19 @@ function displayUserData() {
     
     // Home button handler
     document.getElementById('home-button').addEventListener('click', () => {
-      // In a real app, this would navigate home
-      alert('This would navigate to the home page in a full application.');
+      // Reset the UI to default state
+      document.querySelector('.page-title').textContent = 'Web Security Scan';
+      document.querySelector('.page-description').textContent = 'Identify security vulnerabilities in web applications';
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      document.querySelector('.nav-link[data-page="web-scan"]').classList.add('active');
+      
+      // Reset scan results
+      scanProgress.style.display = 'none';
+      scanResults.style.display = 'none';
+      
+      // Switch to the web scan tab
+      const webTabTrigger = document.querySelector('.tab-trigger[data-tab="web"]');
+      webTabTrigger.click();
     });
     
     // Export report functionality
@@ -1553,17 +1564,710 @@ function displayUserData() {
           sidebar.classList.remove('open');
         }
         
-        // In a real app, this would navigate to the page
+        // Update page content based on navigation
         const page = link.getAttribute('data-page');
-        if (page === 'web-scan') {
-          document.querySelector('.page-title').textContent = 'Web Security Scan';
-          document.querySelector('.page-description').textContent = 'Identify security vulnerabilities in web applications';
-        } else {
-          // Just a demo - alert which page would be navigated to
-          alert(`This would navigate to the ${page.replace('-', ' ')} page in a full application.`);
-        }
+        updatePageContent(page);
       });
     });
+    
+    // Function to update page content based on navigation
+    function updatePageContent(page) {
+      // Reset any active scan displays
+      scanProgress.style.display = 'none';
+      scanResults.style.display = 'none';
+      
+      // Update page title and description based on the selected page
+      switch(page) {
+        case 'dashboard':
+          document.querySelector('.page-title').textContent = 'Risk Dashboard';
+          document.querySelector('.page-description').textContent = 'Overview of security findings and risk assessment';
+          
+          // Show dashboard content (we'll just show the results with some sample data)
+          document.querySelector('.tab-trigger[data-tab="web"]').click();
+          currentProgress = 100;
+          scanFinished = true;
+          completeScan(false);
+          break;
+          
+        case 'web-scan':
+          document.querySelector('.page-title').textContent = 'Web Security Scan';
+          document.querySelector('.page-description').textContent = 'Identify security vulnerabilities in web applications';
+          document.querySelector('.tab-trigger[data-tab="web"]').click();
+          break;
+          
+        case 'code-analysis':
+          document.querySelector('.page-title').textContent = 'Code Analysis';
+          document.querySelector('.page-description').textContent = 'Analyze code for security vulnerabilities and best practices';
+          document.querySelector('.tab-trigger[data-tab="code"]').click();
+          break;
+          
+        case 'network-scan':
+          document.querySelector('.page-title').textContent = 'Network Scan';
+          document.querySelector('.page-description').textContent = 'Discover open ports and network vulnerabilities';
+          
+          // Create custom content for this page
+          const mainContent = document.querySelector('main .container');
+          mainContent.innerHTML = `
+            <div class="page-header">
+              <div>
+                <h1 class="page-title">Network Scan</h1>
+                <p class="page-description">Discover open ports and network vulnerabilities</p>
+              </div>
+              <button class="home-button" id="nav-home-button">
+                <span class="material-icons">home</span>
+                <span class="home-text">Back to Home</span>
+              </button>
+            </div>
+            
+            <div class="card">
+              <h2 class="card-title">Network Security Scan</h2>
+              <form id="network-scan-form">
+                <div class="form-group">
+                  <label for="host-input" class="form-label">Target Host or IP Address</label>
+                  <div class="input-group">
+                    <span class="input-icon material-icons">dns</span>
+                    <input type="text" id="host-input" class="form-input input-with-icon" placeholder="example.com or 192.168.1.1" value="example.com">
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="port-range" class="form-label">Port Range</label>
+                  <input type="text" id="port-range" class="form-input" placeholder="e.g., 80,443,8000-8100" value="20-25,80,443,3000-3010,8080">
+                </div>
+                
+                <div class="form-group">
+                  <div class="form-checkbox">
+                    <input type="checkbox" id="service-detection" class="checkbox-input" checked>
+                    <label for="service-detection" class="checkbox-label">Service Detection</label>
+                  </div>
+                  <div class="form-checkbox">
+                    <input type="checkbox" id="os-detection" class="checkbox-input">
+                    <label for="os-detection" class="checkbox-label">OS Detection</label>
+                  </div>
+                </div>
+                
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary" id="start-network-scan-btn">
+                    <span class="material-icons">network_check</span>
+                    Start Network Scan
+                  </button>
+                </div>
+              </form>
+            </div>
+          `;
+          
+          document.getElementById('nav-home-button').addEventListener('click', () => {
+            updatePageContent('web-scan');
+          });
+          
+          document.getElementById('network-scan-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            startScan(false);
+          });
+          break;
+          
+        case 'api-testing':
+          document.querySelector('.page-title').textContent = 'API Testing';
+          document.querySelector('.page-description').textContent = 'Test APIs for security vulnerabilities and misconfigurations';
+          
+          // Create custom content for this page
+          const apiContent = document.querySelector('main .container');
+          apiContent.innerHTML = `
+            <div class="page-header">
+              <div>
+                <h1 class="page-title">API Testing</h1>
+                <p class="page-description">Test APIs for security vulnerabilities and misconfigurations</p>
+              </div>
+              <button class="home-button" id="api-home-button">
+                <span class="material-icons">home</span>
+                <span class="home-text">Back to Home</span>
+              </button>
+            </div>
+            
+            <div class="card">
+              <h2 class="card-title">API Security Test</h2>
+              <form id="api-test-form">
+                <div class="form-group">
+                  <label for="api-url" class="form-label">API Endpoint URL</label>
+                  <div class="input-group">
+                    <span class="input-icon material-icons">link</span>
+                    <input type="text" id="api-url" class="form-input input-with-icon" placeholder="https://api.example.com/v1/users" value="https://api.example.com/v1/users">
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group" style="flex: 1;">
+                    <label for="api-method" class="form-label">HTTP Method</label>
+                    <select id="api-method" class="form-select">
+                      <option value="GET">GET</option>
+                      <option value="POST">POST</option>
+                      <option value="PUT">PUT</option>
+                      <option value="DELETE">DELETE</option>
+                      <option value="PATCH">PATCH</option>
+                    </select>
+                  </div>
+                  <div class="form-group" style="flex: 1;">
+                    <label for="api-auth" class="form-label">Authentication</label>
+                    <select id="api-auth" class="form-select">
+                      <option value="none">None</option>
+                      <option value="basic">Basic Auth</option>
+                      <option value="bearer">Bearer Token</option>
+                      <option value="api-key">API Key</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="api-payload" class="form-label">Request Payload (JSON)</label>
+                  <textarea id="api-payload" class="form-input" rows="5" style="font-family: monospace;">{\n  "username": "testuser",\n  "email": "test@example.com"\n}</textarea>
+                </div>
+                
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary" id="test-api-btn">
+                    <span class="material-icons">send</span>
+                    Test API
+                  </button>
+                </div>
+              </form>
+            </div>
+          `;
+          
+          document.getElementById('api-home-button').addEventListener('click', () => {
+            updatePageContent('web-scan');
+          });
+          
+          document.getElementById('api-test-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            startScan(false);
+          });
+          break;
+          
+        case 'repository-scan':
+          document.querySelector('.page-title').textContent = 'Repository Scan';
+          document.querySelector('.page-description').textContent = 'Analyze code repositories for security vulnerabilities';
+          
+          // Create custom content for this page
+          const repoContent = document.querySelector('main .container');
+          repoContent.innerHTML = `
+            <div class="page-header">
+              <div>
+                <h1 class="page-title">Repository Scan</h1>
+                <p class="page-description">Analyze code repositories for security vulnerabilities</p>
+              </div>
+              <button class="home-button" id="repo-home-button">
+                <span class="material-icons">home</span>
+                <span class="home-text">Back to Home</span>
+              </button>
+            </div>
+            
+            <div class="card">
+              <h2 class="card-title">Repository Security Scan</h2>
+              <form id="repo-scan-form">
+                <div class="form-group">
+                  <label for="repo-url" class="form-label">Repository URL</label>
+                  <div class="input-group">
+                    <span class="input-icon material-icons">source</span>
+                    <input type="text" id="repo-url" class="form-input input-with-icon" placeholder="https://github.com/username/repository" value="https://github.com/example/repository">
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group" style="flex: 1;">
+                    <label for="repo-branch" class="form-label">Branch</label>
+                    <input type="text" id="repo-branch" class="form-input" placeholder="main" value="main">
+                  </div>
+                  <div class="form-group" style="flex: 1;">
+                    <label for="scan-depth" class="form-label">Scan Depth</label>
+                    <select id="scan-depth" class="form-select">
+                      <option value="shallow">Shallow (faster)</option>
+                      <option value="normal" selected>Normal</option>
+                      <option value="deep">Deep (slower)</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <div class="form-checkbox">
+                    <input type="checkbox" id="scan-dependencies" class="checkbox-input" checked>
+                    <label for="scan-dependencies" class="checkbox-label">Scan Dependencies</label>
+                  </div>
+                  <div class="form-checkbox">
+                    <input type="checkbox" id="secrets-detection" class="checkbox-input" checked>
+                    <label for="secrets-detection" class="checkbox-label">Detect Secrets & API Keys</label>
+                  </div>
+                  <div class="form-checkbox">
+                    <input type="checkbox" id="license-check" class="checkbox-input">
+                    <label for="license-check" class="checkbox-label">License Compliance Check</label>
+                  </div>
+                </div>
+                
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary" id="scan-repo-btn">
+                    <span class="material-icons">search</span>
+                    Scan Repository
+                  </button>
+                </div>
+              </form>
+            </div>
+          `;
+          
+          document.getElementById('repo-home-button').addEventListener('click', () => {
+            updatePageContent('web-scan');
+          });
+          
+          document.getElementById('repo-scan-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            startScan(false);
+          });
+          break;
+          
+        case 'integrated-tools':
+          document.querySelector('.page-title').textContent = 'Integrated Tools';
+          document.querySelector('.page-description').textContent = 'Security tools integrated with the platform';
+          
+          // Create custom content for integrated tools page
+          const toolsContent = document.querySelector('main .container');
+          toolsContent.innerHTML = `
+            <div class="page-header">
+              <div>
+                <h1 class="page-title">Integrated Tools</h1>
+                <p class="page-description">Security tools integrated with the platform</p>
+              </div>
+              <button class="home-button" id="tools-home-button">
+                <span class="material-icons">home</span>
+                <span class="home-text">Back to Home</span>
+              </button>
+            </div>
+            
+            <div class="results-container">
+              <div class="tool-card">
+                <div class="tool-icon"><span class="material-icons">bug_report</span></div>
+                <div class="tool-name">OWASP ZAP</div>
+                <div class="tool-description">Web application security scanner</div>
+                <button class="btn btn-secondary tool-btn">Use Tool</button>
+              </div>
+              
+              <div class="tool-card">
+                <div class="tool-icon"><span class="material-icons">wifi_tethering</span></div>
+                <div class="tool-name">Nmap</div>
+                <div class="tool-description">Network discovery and security auditing</div>
+                <button class="btn btn-secondary tool-btn">Use Tool</button>
+              </div>
+              
+              <div class="tool-card">
+                <div class="tool-icon"><span class="material-icons">code</span></div>
+                <div class="tool-name">SonarQube</div>
+                <div class="tool-description">Code quality and security scanner</div>
+                <button class="btn btn-secondary tool-btn">Use Tool</button>
+              </div>
+              
+              <div class="tool-card">
+                <div class="tool-icon"><span class="material-icons">fingerprint</span></div>
+                <div class="tool-name">Burp Suite</div>
+                <div class="tool-description">Web vulnerability scanner and proxy</div>
+                <button class="btn btn-secondary tool-btn">Use Tool</button>
+              </div>
+              
+              <div class="tool-card">
+                <div class="tool-icon"><span class="material-icons">source</span></div>
+                <div class="tool-name">Semgrep</div>
+                <div class="tool-description">Static application security testing</div>
+                <button class="btn btn-secondary tool-btn">Use Tool</button>
+              </div>
+              
+              <div class="tool-card">
+                <div class="tool-icon"><span class="material-icons">shield</span></div>
+                <div class="tool-name">OWASP Dependency-Check</div>
+                <div class="tool-description">Software composition analysis</div>
+                <button class="btn btn-secondary tool-btn">Use Tool</button>
+              </div>
+            </div>
+          `;
+          
+          document.getElementById('tools-home-button').addEventListener('click', () => {
+            updatePageContent('web-scan');
+          });
+          
+          document.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              startScan(false);
+            });
+          });
+          
+          // Add CSS for tool cards
+          if (!document.getElementById('tool-card-styles')) {
+            const toolStyles = document.createElement('style');
+            toolStyles.id = 'tool-card-styles';
+            toolStyles.textContent = `
+              .tool-card {
+                background-color: var(--dark-surface);
+                border-radius: 0.5rem;
+                padding: 1.5rem;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 0.75rem;
+              }
+              .tool-icon {
+                font-size: 2.5rem;
+                color: var(--primary);
+              }
+              .tool-name {
+                font-size: 1.25rem;
+                font-weight: 600;
+              }
+              .tool-description {
+                color: var(--text-gray);
+                font-size: 0.875rem;
+                margin-bottom: 0.5rem;
+              }
+              .tool-btn {
+                margin-top: auto;
+              }
+            `;
+            document.head.appendChild(toolStyles);
+          }
+          break;
+          
+        case 'custom-scanners':
+          document.querySelector('.page-title').textContent = 'Custom Security Scanners';
+          document.querySelector('.page-description').textContent = 'Specialized security scanning tools';
+          
+          // Create custom content for custom scanners page
+          const scannersContent = document.querySelector('main .container');
+          scannersContent.innerHTML = `
+            <div class="page-header">
+              <div>
+                <h1 class="page-title">Custom Security Scanners</h1>
+                <p class="page-description">Specialized security scanning tools</p>
+              </div>
+              <button class="home-button" id="scanners-home-button">
+                <span class="material-icons">home</span>
+                <span class="home-text">Back to Home</span>
+              </button>
+            </div>
+            
+            <div class="tabs">
+              <div class="tab-list">
+                <button class="tab-trigger active" data-scanner-tab="jwt">JWT Scanner</button>
+                <button class="tab-trigger" data-scanner-tab="header">Security Headers</button>
+                <button class="tab-trigger" data-scanner-tab="ssl">SSL/TLS Scanner</button>
+                <button class="tab-trigger" data-scanner-tab="cors">CORS Tester</button>
+              </div>
+              
+              <div class="scanner-tab-content active" data-scanner-content="jwt">
+                <div class="card">
+                  <h2 class="card-title">JWT Token Scanner</h2>
+                  <form id="jwt-scan-form">
+                    <div class="form-group">
+                      <label for="jwt-token" class="form-label">JWT Token</label>
+                      <textarea id="jwt-token" class="form-input" rows="3" style="font-family: monospace;" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary" id="analyze-jwt-btn">
+                        <span class="material-icons">search</span>
+                        Analyze Token
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              
+              <div class="scanner-tab-content" data-scanner-content="header">
+                <div class="card">
+                  <h2 class="card-title">Security Headers Scanner</h2>
+                  <form id="header-scan-form">
+                    <div class="form-group">
+                      <label for="header-url" class="form-label">Website URL</label>
+                      <div class="input-group">
+                        <span class="input-icon material-icons">link</span>
+                        <input type="text" id="header-url" class="form-input input-with-icon" placeholder="https://example.com" value="https://example.com">
+                      </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary" id="scan-headers-btn">
+                        <span class="material-icons">search</span>
+                        Scan Headers
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              
+              <div class="scanner-tab-content" data-scanner-content="ssl">
+                <!-- Content for SSL scanner tab -->
+                <div class="card">
+                  <h2 class="card-title">SSL/TLS Configuration Scanner</h2>
+                  <form id="ssl-scan-form">
+                    <div class="form-group">
+                      <label for="ssl-domain" class="form-label">Domain Name</label>
+                      <div class="input-group">
+                        <span class="input-icon material-icons">language</span>
+                        <input type="text" id="ssl-domain" class="form-input input-with-icon" placeholder="example.com" value="example.com">
+                      </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary" id="scan-ssl-btn">
+                        <span class="material-icons">search</span>
+                        Scan SSL/TLS
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              
+              <div class="scanner-tab-content" data-scanner-content="cors">
+                <!-- Content for CORS tester tab -->
+                <div class="card">
+                  <h2 class="card-title">CORS Misconfiguration Tester</h2>
+                  <form id="cors-scan-form">
+                    <div class="form-group">
+                      <label for="cors-url" class="form-label">API or Endpoint URL</label>
+                      <div class="input-group">
+                        <span class="input-icon material-icons">link</span>
+                        <input type="text" id="cors-url" class="form-input input-with-icon" placeholder="https://api.example.com/endpoint" value="https://api.example.com/users">
+                      </div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="cors-origin" class="form-label">Origin to Test</label>
+                      <input type="text" id="cors-origin" class="form-input" placeholder="https://attacker.com" value="https://evil-site.com">
+                    </div>
+                    
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary" id="test-cors-btn">
+                        <span class="material-icons">search</span>
+                        Test CORS
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          `;
+          
+          document.getElementById('scanners-home-button').addEventListener('click', () => {
+            updatePageContent('web-scan');
+          });
+          
+          // Setup scanner tab navigation
+          document.querySelectorAll('[data-scanner-tab]').forEach(tab => {
+            tab.addEventListener('click', () => {
+              // Update active tab
+              document.querySelectorAll('[data-scanner-tab]').forEach(t => {
+                t.classList.remove('active');
+              });
+              tab.classList.add('active');
+              
+              // Show correct content
+              const tabName = tab.getAttribute('data-scanner-tab');
+              document.querySelectorAll('[data-scanner-content]').forEach(content => {
+                if (content.getAttribute('data-scanner-content') === tabName) {
+                  content.classList.add('active');
+                } else {
+                  content.classList.remove('active');
+                }
+              });
+            });
+          });
+          
+          // Attach event listeners to forms
+          document.querySelectorAll('#jwt-scan-form, #header-scan-form, #ssl-scan-form, #cors-scan-form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+              e.preventDefault();
+              startScan(false);
+            });
+          });
+          
+          // Add CSS for scanner tabs
+          if (!document.getElementById('scanner-tab-styles')) {
+            const scannerStyles = document.createElement('style');
+            scannerStyles.id = 'scanner-tab-styles';
+            scannerStyles.textContent = `
+              .scanner-tab-content {
+                display: none;
+                margin-top: 1rem;
+              }
+              .scanner-tab-content.active {
+                display: block;
+              }
+            `;
+            document.head.appendChild(scannerStyles);
+          }
+          break;
+          
+        case 'scan-history':
+          document.querySelector('.page-title').textContent = 'Scan History';
+          document.querySelector('.page-description').textContent = 'View past security scans and findings';
+          
+          // Create custom content for scan history page
+          const historyContent = document.querySelector('main .container');
+          historyContent.innerHTML = `
+            <div class="page-header">
+              <div>
+                <h1 class="page-title">Scan History</h1>
+                <p class="page-description">View past security scans and findings</p>
+              </div>
+              <button class="home-button" id="history-home-button">
+                <span class="material-icons">home</span>
+                <span class="home-text">Back to Home</span>
+              </button>
+            </div>
+            
+            <div class="card">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="card-title mb-0">Recent Scans</h2>
+                <button class="btn btn-secondary">
+                  <span class="material-icons">download</span>
+                  Export All
+                </button>
+              </div>
+              
+              <div class="history-list">
+                <div class="history-item">
+                  <div class="history-header">
+                    <div class="history-target">example.com</div>
+                    <div class="history-type">Web Security Scan</div>
+                    <div class="history-date">Today, 11:30 AM</div>
+                    <div class="history-findings">
+                      <span class="severity-badge severity-critical">2</span>
+                      <span class="severity-badge severity-high">3</span>
+                      <span class="severity-badge severity-medium">4</span>
+                    </div>
+                    <button class="btn btn-secondary history-btn">View</button>
+                  </div>
+                </div>
+                
+                <div class="history-item">
+                  <div class="history-header">
+                    <div class="history-target">JavaScript Code Analysis</div>
+                    <div class="history-type">Code Analysis</div>
+                    <div class="history-date">Today, 10:15 AM</div>
+                    <div class="history-findings">
+                      <span class="severity-badge severity-critical">1</span>
+                      <span class="severity-badge severity-high">2</span>
+                      <span class="severity-badge severity-medium">4</span>
+                    </div>
+                    <button class="btn btn-secondary history-btn">View</button>
+                  </div>
+                </div>
+                
+                <div class="history-item">
+                  <div class="history-header">
+                    <div class="history-target">api.example.com</div>
+                    <div class="history-type">API Testing</div>
+                    <div class="history-date">Yesterday, 3:45 PM</div>
+                    <div class="history-findings">
+                      <span class="severity-badge severity-high">2</span>
+                      <span class="severity-badge severity-medium">3</span>
+                      <span class="severity-badge severity-low">5</span>
+                    </div>
+                    <button class="btn btn-secondary history-btn">View</button>
+                  </div>
+                </div>
+                
+                <div class="history-item">
+                  <div class="history-header">
+                    <div class="history-target">github.com/example/repo</div>
+                    <div class="history-type">Repository Scan</div>
+                    <div class="history-date">2 days ago</div>
+                    <div class="history-findings">
+                      <span class="severity-badge severity-critical">3</span>
+                      <span class="severity-badge severity-high">5</span>
+                      <span class="severity-badge severity-medium">8</span>
+                    </div>
+                    <button class="btn btn-secondary history-btn">View</button>
+                  </div>
+                </div>
+                
+                <div class="history-item">
+                  <div class="history-header">
+                    <div class="history-target">internal-app.example.com</div>
+                    <div class="history-type">Web Security Scan</div>
+                    <div class="history-date">3 days ago</div>
+                    <div class="history-findings">
+                      <span class="severity-badge severity-high">4</span>
+                      <span class="severity-badge severity-medium">6</span>
+                      <span class="severity-badge severity-low">3</span>
+                    </div>
+                    <button class="btn btn-secondary history-btn">View</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          
+          document.getElementById('history-home-button').addEventListener('click', () => {
+            updatePageContent('web-scan');
+          });
+          
+          document.querySelectorAll('.history-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              startScan(false);
+            });
+          });
+          
+          // Add CSS for history items
+          if (!document.getElementById('history-styles')) {
+            const historyStyles = document.createElement('style');
+            historyStyles.id = 'history-styles';
+            historyStyles.textContent = `
+              .history-list {
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+              }
+              .history-item {
+                background-color: var(--dark-bg);
+                border-radius: 0.5rem;
+                overflow: hidden;
+              }
+              .history-header {
+                padding: 1rem;
+                display: grid;
+                grid-template-columns: 2fr 1fr 1fr 1fr auto;
+                align-items: center;
+                gap: 1rem;
+              }
+              .history-target {
+                font-weight: 600;
+              }
+              .history-type {
+                color: var(--text-gray);
+                font-size: 0.875rem;
+              }
+              .history-date {
+                color: var(--text-gray);
+                font-size: 0.875rem;
+              }
+              .history-findings {
+                display: flex;
+                gap: 0.5rem;
+              }
+              @media (max-width: 768px) {
+                .history-header {
+                  grid-template-columns: 1fr;
+                  gap: 0.5rem;
+                }
+                .history-btn {
+                  width: 100%;
+                }
+              }
+            `;
+            document.head.appendChild(historyStyles);
+          }
+          break;
+          
+        default:
+          document.querySelector('.page-title').textContent = 'Web Security Scan';
+          document.querySelector('.page-description').textContent = 'Identify security vulnerabilities in web applications';
+          document.querySelector('.tab-trigger[data-tab="web"]').click();
+      }
+    }
     
     // Check for mobile window size
     function updateMobileView() {
