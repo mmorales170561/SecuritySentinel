@@ -4,6 +4,7 @@ import { ScanningProgress } from "@/components/scanning-progress";
 import { ScanResults } from "@/components/scan-results";
 import { useScan } from "@/hooks/use-scan";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function CodeAnalysis() {
   const [scanId, setScanId] = useState<number | null>(null);

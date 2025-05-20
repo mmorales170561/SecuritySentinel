@@ -5,9 +5,9 @@ import { getQueryFn } from "@/lib/queryClient";
 
 export default function Dashboard() {
   // Fetch all scans
-  const { data: scans = [], isLoading: isLoadingScans } = useQuery({
+  const { data: scans = [], isLoading: isLoadingScans } = useQuery<any[]>({
     queryKey: ["/api/scans"],
-    queryFn: getQueryFn({ on401: "returnNull" }),
+    queryFn: getQueryFn<any[]>({ on401: "returnNull" }),
   });
 
   // Extract all findings from scans for dashboard analysis
