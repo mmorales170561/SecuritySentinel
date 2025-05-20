@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Security Scanner Dashboard</title>
   <meta name="description" content="A comprehensive security scanning tool for web vulnerability assessment and code analysis">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>">
   
   <!-- Open Graph tags for better social media sharing -->
   <meta property="og:title" content="Security Scanner Dashboard">
@@ -929,7 +930,13 @@ function displayUserData() {
         </div>
         
         <div class="card">
-          <h2 class="card-title">Security Findings</h2>
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="card-title mb-0">Security Findings</h2>
+            <button class="btn btn-secondary" id="export-report-btn">
+              <span class="material-icons">download</span>
+              Export Report
+            </button>
+          </div>
           <div id="findings-list">
             <!-- Findings will be added here -->
           </div>
@@ -1093,11 +1100,12 @@ function displayUserData() {
     
     function generateResults(isCodeScan) {
       // Generate random counts for severity levels
-      const criticalCount = isCodeScan ? Math.floor(Math.random() * 2) : Math.floor(Math.random() * 3);
-      const highCount = Math.floor(Math.random() * 4) + 1;
-      const mediumCount = Math.floor(Math.random() * 5) + 2;
-      const lowCount = Math.floor(Math.random() * 6) + 3;
-      const infoCount = Math.floor(Math.random() * 4) + 2;
+      // Use predefined counts for more realistic results
+      const criticalCount = isCodeScan ? 1 : 2;
+      const highCount = isCodeScan ? 2 : 3;
+      const mediumCount = 4;
+      const lowCount = 5;
+      const infoCount = 3;
       
       // Update the count displays
       document.getElementById('critical-count').textContent = criticalCount;
@@ -1110,32 +1118,72 @@ function displayUserData() {
       const findingsList = document.getElementById('findings-list');
       findingsList.innerHTML = '';
       
+      // Get input values for more personalized results
+      const targetValue = isCodeScan ? 
+        document.getElementById('code-language').value : 
+        document.getElementById('url-input').value;
+      const codeValue = isCodeScan ? 
+        document.getElementById('code-input').value : "";
+        
       // Generate findings based on scan type
       if (isCodeScan) {
-        // Code analysis findings
+        // Code analysis findings - always show these core vulnerabilities
         generateCodeFinding('critical', 'Cross-Site Scripting (XSS) Vulnerability', 
           'Unsanitized user input is directly inserted into the DOM, leading to potential XSS attacks.', 
-          "document.getElementById('user-data').innerHTML = data.name;", 
+          codeValue.includes('innerHTML') ? 
+            codeValue.split('\n').find(line => line.includes('innerHTML')) : 
+            "document.getElementById('user-data').innerHTML = data.name;", 
           "User input from the API response is directly inserted into the DOM without sanitization.");
         
         generateCodeFinding('high', 'URL Injection Vulnerability',
           'User input is directly concatenated into a URL, potentially allowing for URL manipulation attacks.',
-          "fetch('/api/users/' + userId)",
+          codeValue.includes('fetch') ? 
+            codeValue.split('\n').find(line => line.includes('fetch')) : 
+            "fetch('/api/users/' + userId)",
           "User IDs should be validated and sanitized before being used in API calls.");
         
         generateCodeFinding('medium', 'Lack of Input Validation',
           'No validation is performed on user input before processing.',
-          "const userId = getUserInput('user-id');",
+          codeValue.includes('getUserInput') ? 
+            codeValue.split('\n').find(line => line.includes('getUserInput')) : 
+            "const userId = getUserInput('user-id');",
           "Input should be validated for format and content before use.");
         
+        generateCodeFinding('medium', 'Insecure Authentication Mechanism',
+          'The authentication process does not implement sufficient security controls.',
+          codeValue.includes('login') || codeValue.includes('auth') ? 
+            codeValue.split('\n').find(line => line.includes('login') || line.includes('auth')) : 
+            "function login(username, password) {\n  // No rate limiting or account lockout\n  return checkCredentials(username, password);\n}",
+          "Authentication lacks protection against brute force attacks and has no multi-factor options.");
+            
         generateCodeFinding('low', 'Inefficient DOM Manipulation',
           'Multiple DOM manipulations could be optimized.',
-          "document.getElementById('user-data').innerHTML = \"User ID: \" + userId;",
+          codeValue.includes('getElementById') && codeValue.includes('innerHTML') ? 
+            codeValue.split('\n').find(line => line.includes('getElementById') && line.includes('innerHTML')) : 
+            "document.getElementById('user-data').innerHTML = \"User ID: \" + userId;",
           "Consider using a temporary variable to avoid multiple DOM updates.");
+        
+        // Add language-specific findings
+        if (targetValue === 'javascript') {
+          generateCodeFinding('high', 'Eval Usage',
+            'The code uses eval() which executes strings as code, creating a security risk.',
+            "eval('getUser(' + userId + ')');",
+            "Using eval() can lead to code injection attacks if user input is involved.");
+        } else if (targetValue === 'python') {
+          generateCodeFinding('high', 'SQL Injection Risk',
+            'The code constructs SQL queries using string concatenation.',
+            "cursor.execute('SELECT * FROM users WHERE id = ' + user_id)",
+            "String concatenation in SQL queries can lead to SQL injection attacks.");
+        } else if (targetValue === 'php') {
+          generateCodeFinding('critical', 'Remote Code Execution Risk',
+            'The code uses shell_exec with user input.',
+            "shell_exec('ping ' . $_GET['ip']);",
+            "Using shell_exec with unsanitized user input can lead to command injection.");
+        }
       } else {
-        // Web scan findings
+        // Web scan findings - basic set
         generateWebFinding('critical', 'Cross-Site Scripting (XSS) Vulnerability',
-          '/search?q=', 
+          targetValue + '/search?q=', 
           'The search parameter is vulnerable to reflected XSS attacks.',
           'User-supplied input is reflected in the response without proper encoding.');
         
@@ -1148,11 +1196,49 @@ function displayUserData() {
           'HTTP Headers', 
           'Several important security headers are missing from HTTP responses.',
           'Content-Security-Policy, X-XSS-Protection, and X-Frame-Options headers are not set.');
+          
+        generateWebFinding('medium', 'CORS Misconfiguration',
+          'HTTP Headers',
+          'The Access-Control-Allow-Origin header is set to "*".',
+          'Overly permissive CORS policy allows any domain to access resources.');
         
         generateWebFinding('low', 'Cookie Without Secure Flag',
           'Cookies', 
           'Session cookies are transmitted over unencrypted connections.',
           'The Secure flag is not set on cookies containing sensitive information.');
+        
+        // Add scan type-specific findings
+        if (document.getElementById('scan-type').value === 'authentication') {
+          generateWebFinding('critical', 'Weak Authentication Mechanism',
+            targetValue + '/login', 
+            'The login page does not implement sufficient security controls.',
+            'No multi-factor authentication option is available, and password policies are weak.');
+            
+          generateWebFinding('high', 'Insecure Password Reset',
+            targetValue + '/reset-password',
+            'The password reset functionality is vulnerable to account takeover.',
+            'Password reset tokens are not properly secured and can be guessed or brute-forced.');
+        } else if (document.getElementById('scan-type').value === 'injection') {
+          generateWebFinding('critical', 'SQL Injection Vulnerability',
+            targetValue + '/product?id=1',
+            'The product ID parameter is vulnerable to SQL injection attacks.',
+            'User input is directly inserted into a SQL query without proper parameterization.');
+            
+          generateWebFinding('high', 'Command Injection Vulnerability',
+            targetValue + '/tools/ping',
+            'The ping tool is vulnerable to command injection attacks.',
+            'User input is passed directly to a shell command without proper validation.');
+        } else if (document.getElementById('scan-type').value === 'xss') {
+          generateWebFinding('critical', 'Stored Cross-Site Scripting',
+            targetValue + '/comments',
+            'The comment submission form is vulnerable to stored XSS attacks.',
+            'User comments are stored and displayed without proper sanitization.');
+            
+          generateWebFinding('high', 'DOM-based Cross-Site Scripting',
+            targetValue + '/profile',
+            'The profile page is vulnerable to DOM-based XSS attacks.',
+            'Client-side JavaScript directly manipulates the DOM with unsanitized data from URL fragments.');
+        }
       }
     }
     
@@ -1365,6 +1451,88 @@ function displayUserData() {
       // In a real app, this would navigate home
       alert('This would navigate to the home page in a full application.');
     });
+    
+    // Export report functionality
+    document.getElementById('export-report-btn').addEventListener('click', () => {
+      exportScanReport();
+    });
+    
+    function exportScanReport() {
+      const isCodeScan = document.querySelector('.tab-trigger.active').getAttribute('data-tab') === 'code';
+      const targetValue = isCodeScan ? 
+        document.getElementById('code-language').value : 
+        document.getElementById('url-input').value;
+        
+      // Create report content
+      let reportContent = `Security Scan Report\n`;
+      reportContent += `===================\n\n`;
+      reportContent += `Target: ${targetValue}\n`;
+      reportContent += `Scan Type: ${isCodeScan ? 'Code Analysis' : document.getElementById('scan-type').value}\n`;
+      reportContent += `Date: ${new Date().toLocaleString()}\n\n`;
+      
+      reportContent += `Severity Summary\n`;
+      reportContent += `-----------------\n`;
+      reportContent += `Critical: ${document.getElementById('critical-count').textContent}\n`;
+      reportContent += `High:     ${document.getElementById('high-count').textContent}\n`;
+      reportContent += `Medium:   ${document.getElementById('medium-count').textContent}\n`;
+      reportContent += `Low:      ${document.getElementById('low-count').textContent}\n`;
+      reportContent += `Info:     ${document.getElementById('info-count').textContent}\n\n`;
+      
+      reportContent += `Detailed Findings\n`;
+      reportContent += `-----------------\n\n`;
+      
+      // Extract findings from the DOM
+      const findingElements = document.querySelectorAll('.finding-card');
+      findingElements.forEach((findingElement, index) => {
+        const severityBadge = findingElement.querySelector('.severity-badge');
+        const severity = severityBadge ? severityBadge.textContent : 'Unknown';
+        const title = findingElement.querySelector('.finding-title').textContent.replace(severity, '').trim();
+        
+        reportContent += `${index + 1}. [${severity.toUpperCase()}] ${title}\n`;
+        
+        // Try to extract details if the finding body is available
+        const findingBody = findingElement.querySelector('.finding-body');
+        if (findingBody) {
+          const sections = findingBody.querySelectorAll('.finding-section');
+          sections.forEach(section => {
+            const sectionTitle = section.querySelector('.finding-section-title');
+            const sectionContent = section.querySelector('.finding-content');
+            
+            if (sectionTitle && sectionContent) {
+              reportContent += `   ${sectionTitle.textContent}:\n`;
+              
+              // Get text content, handling code blocks specially
+              let content = sectionContent.textContent;
+              const codeBlock = sectionContent.querySelector('.code-block');
+              if (codeBlock) {
+                content = content.replace(codeBlock.textContent, '').trim();
+                reportContent += `   ${content}\n`;
+                reportContent += `   Code: ${codeBlock.textContent.trim()}\n`;
+              } else {
+                reportContent += `   ${content.trim()}\n`;
+              }
+              reportContent += '\n';
+            }
+          });
+        }
+        
+        reportContent += '\n';
+      });
+      
+      reportContent += `\nThis report was generated by Security Scanner Dashboard.\n`;
+      reportContent += `For more information, visit https://github.com/yourusername/security-scanner\n`;
+      
+      // Create download link
+      const blob = new Blob([reportContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `security-scan-${targetValue.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
     
     // Navigation links
     document.querySelectorAll('.nav-link').forEach(link => {
