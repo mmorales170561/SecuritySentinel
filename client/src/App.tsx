@@ -11,6 +11,7 @@ import NetworkScan from "@/pages/network";
 import ApiTesting from "@/pages/api";
 import RepositoryScan from "@/pages/repository";
 import Settings from "@/pages/settings";
+import ToolsIntegration from "@/pages/tools";
 import { useToast } from "@/hooks/use-toast";
 
 function Router() {
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/api" component={ApiTesting} />
       <Route path="/repository" component={RepositoryScan} />
       <Route path="/settings" component={Settings} />
+      <Route path="/tools" component={ToolsIntegration} />
       <Route component={NotFound} />
     </Switch>
   );

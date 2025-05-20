@@ -146,49 +146,68 @@ export function Sidebar({ isMobileOpen, closeMobileMenu }: SidebarProps) {
           </h2>
           <ul className="space-y-2">
             <li>
-              <a
-                href="#"
-                className="flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300"
-              >
-                <span className="material-icons text-sm mr-3">bug_report</span>
-                <span>Burp Suite</span>
-              </a>
+              <Link href="/tools">
+                <a
+                  className={`flex items-center px-3 py-2 rounded-md ${
+                    location.includes("tools")
+                      ? "bg-primary bg-opacity-20 text-primary"
+                      : "hover:bg-gray-800 text-gray-300"
+                  }`}
+                >
+                  <span className="material-icons text-sm mr-3">build</span>
+                  <span>Security Tools</span>
+                </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
-                className="flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300"
-              >
-                <span className="material-icons text-sm mr-3">security</span>
-                <span>OWASP ZAP</span>
-              </a>
+              <Link href="/tools#burp">
+                <a
+                  className={`flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300`}
+                >
+                  <span className="material-icons text-sm mr-3">bug_report</span>
+                  <span>Burp Suite</span>
+                </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
-                className="flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300"
-              >
-                <span className="material-icons text-sm mr-3">wifi_tethering</span>
-                <span>Nmap</span>
-              </a>
+              <Link href="/tools#zap">
+                <a
+                  className={`flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300`}
+                >
+                  <span className="material-icons text-sm mr-3">security</span>
+                  <span>OWASP ZAP</span>
+                </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
-                className="flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300"
-              >
-                <span className="material-icons text-sm mr-3">insights</span>
-                <span>SonarQube</span>
-              </a>
+              <Link href="/tools#nmap">
+                <a
+                  className={`flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300`}
+                >
+                  <span className="material-icons text-sm mr-3">wifi_tethering</span>
+                  <span>Nmap</span>
+                </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
-                className="flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300"
-              >
-                <span className="material-icons text-sm mr-3">find_in_page</span>
-                <span>Semgrep</span>
-              </a>
+              <Link href="/tools#semgrep">
+                <a
+                  className={`flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300`}
+                >
+                  <span className="material-icons text-sm mr-3">find_in_page</span>
+                  <span>Semgrep</span>
+                </a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/tools#sonarqube">
+                <a
+                  className={`flex items-center px-3 py-2 rounded-md hover:bg-gray-800 text-gray-300`}
+                >
+                  <span className="material-icons text-sm mr-3">insights</span>
+                  <span>SonarQube</span>
+                </a>
+              </Link>
             </li>
           </ul>
         </div>
