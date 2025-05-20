@@ -8,6 +8,8 @@ import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import CodeAnalysis from "@/pages/code";
 import NetworkScan from "@/pages/network";
+import ApiTesting from "@/pages/api";
+import RepositoryScan from "@/pages/repository";
 import { useToast } from "@/hooks/use-toast";
 
 function Router() {
@@ -17,6 +19,8 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/code" component={CodeAnalysis} />
       <Route path="/network" component={NetworkScan} />
+      <Route path="/api" component={ApiTesting} />
+      <Route path="/repository" component={RepositoryScan} />
       <Route component={NotFound} />
     </Switch>
   );
